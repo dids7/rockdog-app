@@ -18,7 +18,44 @@ const loginForm = document.getElementById("login-form");
 const loginBtn = document.getElementById("login-btn");
 const loginError = document.getElementById("login-error");
 const logoutBtn = document.getElementById("logout-btn");
+const logoutBtnDesktop = document.getElementById("logout-btn-desktop");
 const userEmailDisplay = document.getElementById("user-email-display");
+const pageTitle = document.querySelector(".page-title");
+const toast = document.getElementById("toast");
+
+const NAV_LABELS = {
+  painel: "Painel",
+  estoque: "Estoque",
+  pedidos: "Pedidos",
+  clientes: "Clientes",
+  relatorios: "Relatórios"
+};
+
+let toastTimeout;
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add("visible");
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove("visible"), 2200);
+}
+
+// Navegação (sidebar + bottom nav). Por enquanto só "Painel" tem conteúdo real;
+// os outros módulos avisam que ainda estão em construção.
+document.querySelectorAll(".nav-item").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const target = btn.dataset.nav;
+
+    document.querySelectorAll(`.nav-item`).forEach((el) => {
+      el.classList.toggle("active", el.dataset.nav === target);
+    });
+
+    if (pageTitle) pageTitle.textContent = NAV_LABELS[target] || "Painel";
+
+    if (target !== "painel") {
+      showToast(`${NAV_LABELS[target]} chega em breve`);
+    }
+  });
+});
 
 // Registra o service worker (permite instalar o app / funcionar offline)
 if ("serviceWorker" in navigator) {
@@ -80,6 +117,9 @@ loginForm.addEventListener("submit", async (event) => {
 });
 
 logoutBtn.addEventListener("click", async () => {
+  await signOut(auth);
+});
+logoutBtnDesktop.addEventListener("click", async () => {
   await signOut(auth);
 });
 
