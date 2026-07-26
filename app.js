@@ -10,6 +10,7 @@ import {
   signOut,
   NEGOCIO_ID
 } from "./firebase-config.js";
+import { initEstoqueModule, stopEstoqueModule } from "./estoque.js";
 
 const loadingScreen = document.getElementById("loading-screen");
 const loginScreen = document.getElementById("login-screen");
@@ -39,19 +40,27 @@ function showToast(message) {
   toastTimeout = setTimeout(() => toast.classList.remove("visible"), 2200);
 }
 
-// Navegação (sidebar + bottom nav). Por enquanto só "Painel" tem conteúdo real;
+const AVAILABLE_VIEWS = ["painel", "estoque"];
+
+function switchView(target) {
+  document.querySelectorAll(".view").forEach((el) => {
+    el.classList.toggle("active", el.id === `view-${target}`);
+  });
+  document.querySelectorAll(".nav-item").forEach((el) => {
+    el.classList.toggle("active", el.dataset.nav === target);
+  });
+  if (pageTitle) pageTitle.textContent = NAV_LABELS[target] || "Painel";
+}
+
+// Navegação (sidebar + bottom nav). Painel e Estoque têm conteúdo real;
 // os outros módulos avisam que ainda estão em construção.
 document.querySelectorAll(".nav-item").forEach((btn) => {
   btn.addEventListener("click", () => {
     const target = btn.dataset.nav;
 
-    document.querySelectorAll(`.nav-item`).forEach((el) => {
-      el.classList.toggle("active", el.dataset.nav === target);
-    });
-
-    if (pageTitle) pageTitle.textContent = NAV_LABELS[target] || "Painel";
-
-    if (target !== "painel") {
+    if (AVAILABLE_VIEWS.includes(target)) {
+      switchView(target);
+    } else {
       showToast(`${NAV_LABELS[target]} chega em breve`);
     }
   });
@@ -78,11 +87,18 @@ function showLogin() {
   appShell.classList.remove("visible");
 }
 
+let estoqueIniciado = false;
+
 function showApp(user) {
   loadingScreen.style.display = "none";
   loginScreen.style.display = "none";
   appShell.classList.add("visible");
   userEmailDisplay.textContent = `${user.email} · negócio: ${NEGOCIO_ID}`;
+
+  if (!estoqueIniciado) {
+    estoqueIniciado = true;
+    initEstoqueModule();
+  }
 }
 
 // Observa o estado de login. Isso roda automaticamente sempre que
@@ -91,6 +107,10 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     showApp(user);
   } else {
+    if (estoqueIniciado) {
+      stopEstoqueModule();
+      estoqueIniciado = false;
+    }
     showLogin();
   }
 });
