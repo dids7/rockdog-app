@@ -217,6 +217,20 @@
       </form>
     </div>
   </div>
+  <!-- Janela genérica de confirmação/entrada/aviso, substitui confirm()/prompt()/alert() do navegador -->
+  <div id="dialog-overlay" class="modal-overlay">
+    <div class="modal-card dialog-card">
+      <h3 id="dialog-title" class="dialog-title"></h3>
+      <p id="dialog-message" class="dialog-message"></p>
+      <div id="dialog-input-wrap" class="field" hidden>
+        <input type="text" id="dialog-input" />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="dialog-cancel">Cancelar</button>
+        <button type="button" class="btn-primary btn-compact" id="dialog-confirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script type="module" src="app.js"></script>
