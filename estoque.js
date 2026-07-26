@@ -18,6 +18,7 @@ import {
   getDocs,
   writeBatch
 } from "./firebase-config.js";
+import { confirmDialog, promptDialog, alertDialog } from "./ui-dialog.js";
 
 const CATEGORIAS = ["Carnes", "Pães", "Molhos", "Guarnições", "Bebidas", "Embalagens", "Outros"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade", "pacote", "caixa"];
@@ -186,21 +187,21 @@ function attachRowEvents() {
 }
 
 async function ajustarQuantidade(item, direcao) {
-  const valorTexto = prompt(
+  const valorTexto = await promptDialog(
     `${direcao === "mais" ? "Adicionar" : "Retirar"} quantas ${item.unidade} de "${item.nome}"?`,
-    "1"
+    { title: direcao === "mais" ? "Adicionar ao estoque" : "Retirar do estoque", defaultValue: "1", inputType: "number", confirmLabel: "Confirmar" }
   );
   if (valorTexto === null) return;
-  const valor = parseFloat(valorTexto.replace(",", "."));
+  const valor = parseFloat(String(valorTexto).replace(",", "."));
   if (isNaN(valor) || valor <= 0) {
-    alert("Digite um número válido maior que zero.");
+    await alertDialog("Digite um número válido maior que zero.");
     return;
   }
 
   const delta = direcao === "mais" ? valor : -valor;
   const novaQuantidade = item.quantidade + delta;
   if (novaQuantidade < 0) {
-    alert("Isso deixaria o estoque negativo. Confere a quantidade.");
+    await alertDialog("Isso deixaria o estoque negativo. Confere a quantidade.");
     return;
   }
 
@@ -211,7 +212,10 @@ async function ajustarQuantidade(item, direcao) {
 }
 
 async function excluirIngrediente(item) {
-  const confirmado = confirm(`Excluir "${item.nome}" do estoque? Essa ação não pode ser desfeita.`);
+  const confirmado = await confirmDialog(
+    `Excluir "${item.nome}" do estoque? Essa ação não pode ser desfeita.`,
+    { title: "Excluir ingrediente", confirmLabel: "Excluir", danger: true }
+  );
   if (!confirmado) return;
   await deleteDoc(doc(db, "ingredientes", item.id));
 }
@@ -252,7 +256,7 @@ async function salvarIngrediente(event) {
   };
 
   if (!dados.nome) {
-    alert("Digite o nome do ingrediente.");
+    await alertDialog("Digite o nome do ingrediente.");
     return;
   }
 
