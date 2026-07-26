@@ -90,43 +90,62 @@
     </div>
 
     <div class="main">
-      <div class="welcome">
-        <h1>Bem-vindo</h1>
-        <p id="user-email-display">Painel de controle do Rock Dog</p>
+      <div id="view-painel" class="view active">
+        <div class="welcome">
+          <h1>Bem-vindo</h1>
+          <p id="user-email-display">Painel de controle do Rock Dog</p>
+        </div>
+
+        <div class="module-grid">
+          <div class="module-card">
+            <div class="card-header">
+              <span class="tag">Estoque</span>
+            </div>
+            <h3>Ingredientes</h3>
+            <p>Controle de quantidade e avisos de reposição.</p>
+          </div>
+          <div class="module-card soon">
+            <div class="card-header">
+              <span class="tag">Vendas</span>
+              <span class="badge-soon">Em breve</span>
+            </div>
+            <h3>Pedidos</h3>
+            <p>Registro de pedidos e baixa automática do estoque.</p>
+          </div>
+          <div class="module-card soon">
+            <div class="card-header">
+              <span class="tag">Base</span>
+              <span class="badge-soon">Em breve</span>
+            </div>
+            <h3>Clientes</h3>
+            <p>Cadastro e histórico de quem já pediu.</p>
+          </div>
+          <div class="module-card soon">
+            <div class="card-header">
+              <span class="tag">Análise</span>
+              <span class="badge-soon">Em breve</span>
+            </div>
+            <h3>Relatórios</h3>
+            <p>Vendas, consumo de ingredientes e mais.</p>
+          </div>
+        </div>
       </div>
 
-      <div class="module-grid">
-        <div class="module-card soon">
-          <div class="card-header">
-            <span class="tag">Estoque</span>
-            <span class="badge-soon">Em breve</span>
+      <div id="view-estoque" class="view">
+        <div class="view-header">
+          <div>
+            <h1>Estoque</h1>
+            <p class="view-subtitle">Ingredientes e níveis de reposição</p>
           </div>
-          <h3>Ingredientes</h3>
-          <p>Controle de quantidade e avisos de reposição.</p>
+          <button class="btn-primary btn-compact" id="btn-novo-ingrediente">+ Novo ingrediente</button>
         </div>
-        <div class="module-card soon">
-          <div class="card-header">
-            <span class="tag">Vendas</span>
-            <span class="badge-soon">Em breve</span>
-          </div>
-          <h3>Pedidos</h3>
-          <p>Registro de pedidos e baixa automática do estoque.</p>
+
+        <div id="estoque-alerta" class="alerta-banner">
+          <span id="estoque-alerta-texto"></span>
         </div>
-        <div class="module-card soon">
-          <div class="card-header">
-            <span class="tag">Base</span>
-            <span class="badge-soon">Em breve</span>
-          </div>
-          <h3>Clientes</h3>
-          <p>Cadastro e histórico de quem já pediu.</p>
-        </div>
-        <div class="module-card soon">
-          <div class="card-header">
-            <span class="tag">Análise</span>
-            <span class="badge-soon">Em breve</span>
-          </div>
-          <h3>Relatórios</h3>
-          <p>Vendas, consumo de ingredientes e mais.</p>
+
+        <div id="estoque-lista" class="estoque-lista">
+          <p class="empty-state">Carregando ingredientes...</p>
         </div>
       </div>
     </div>
@@ -158,6 +177,46 @@
 
   <!-- Toast simples para avisos rápidos ("em breve", erros, confirmações) -->
   <div id="toast" class="toast"></div>
+
+  <!-- Modal de cadastro/edição de ingrediente -->
+  <div id="modal-ingrediente" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-ingrediente-titulo">Novo ingrediente</h3>
+        <button class="btn-icon" id="btn-fechar-modal" type="button">✕</button>
+      </div>
+      <form id="form-ingrediente">
+        <div class="field">
+          <label for="ing-nome">Nome</label>
+          <input type="text" id="ing-nome" required />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="ing-categoria">Categoria</label>
+            <select id="ing-categoria"></select>
+          </div>
+          <div class="field">
+            <label for="ing-unidade">Unidade</label>
+            <select id="ing-unidade"></select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="ing-quantidade">Quantidade atual</label>
+            <input type="number" id="ing-quantidade" step="0.01" min="0" required />
+          </div>
+          <div class="field">
+            <label for="ing-minimo">Quantidade mínima</label>
+            <input type="number" id="ing-minimo" step="0.01" min="0" required />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="btn-cancelar-ingrediente">Cancelar</button>
+          <button type="submit" class="btn-primary btn-compact">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <script type="module" src="app.js"></script>
