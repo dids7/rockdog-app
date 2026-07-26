@@ -431,3 +431,219 @@ a { color: var(--yellow); }
   .login-card { padding: 28px 20px 22px; }
   .wordmark { font-size: 36px; }
 }
+
+/* ==========================================================================
+   Views (Painel / Estoque / ...)
+   ========================================================================== */
+.view { display: none; }
+.view.active { display: block; }
+
+.view-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.view-header h1 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  letter-spacing: 0.5px;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  color: var(--white);
+}
+.view-subtitle {
+  color: #b7b7bb;
+  font-size: 13px;
+  margin: 0;
+}
+
+.btn-compact {
+  width: auto;
+  white-space: nowrap;
+  padding: 10px 16px;
+  font-size: 13px;
+}
+
+/* ---- Alerta de reposição ---- */
+.alerta-banner {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: rgba(228, 87, 46, 0.12);
+  border: 1px solid rgba(228, 87, 46, 0.4);
+  color: #ff9376;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.alerta-banner.visible { display: flex; }
+
+/* ---- Lista de estoque ---- */
+.categoria-bloco { margin-bottom: 22px; }
+.categoria-titulo {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--yellow);
+  margin: 0 0 8px;
+}
+
+.ingrediente-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ingrediente-linha {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ingrediente-nome {
+  margin: 0 0 3px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+}
+.ingrediente-qtd {
+  margin: 0;
+  font-size: 13px;
+  color: #b7b7bb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+}
+
+.status-badge {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+.status-badge.status-ok {
+  background: rgba(76, 175, 109, 0.15);
+  color: var(--green);
+}
+.status-badge.status-baixo {
+  background: rgba(228, 87, 46, 0.15);
+  color: #ff9376;
+}
+
+.ingrediente-acoes {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  color: var(--white);
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.btn-icon:hover { border-color: var(--yellow); color: var(--yellow); }
+.btn-icon-danger:hover { border-color: var(--red); color: var(--red); }
+
+.empty-state {
+  color: var(--gray);
+  font-size: 13px;
+  padding: 20px 0;
+}
+
+/* ---- Modal ---- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+}
+.modal-overlay.visible { display: flex; }
+
+.modal-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.modal-header h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin: 0;
+  color: var(--white);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 14px;
+  color: var(--white);
+  font-size: 14px;
+  outline: none;
+}
+select:focus { border-color: var(--yellow); }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+.modal-actions .btn-ghost,
+.modal-actions .btn-primary {
+  width: auto;
+}
+
+@media (max-width: 480px) {
+  .field-row { grid-template-columns: 1fr; }
+}
