@@ -158,7 +158,83 @@ a { color: var(--yellow); }
   min-height: 100vh;
   display: none;
 }
-.app-shell.visible { display: block; }
+.app-shell.visible {
+  display: flex;
+  align-items: stretch;
+}
+
+.mobile-only { display: block; }
+.desktop-only { display: none; }
+
+/* ---- Sidebar (desktop) ---- */
+.sidebar {
+  display: none;
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 22px 16px;
+  flex-direction: column;
+  gap: 28px;
+}
+.sidebar .mini-word {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 0.5px;
+  padding-left: 6px;
+}
+.sidebar .mini-word .rock { color: var(--yellow); }
+.sidebar .mini-word .dog { color: var(--white); }
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--gray);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.nav-item .nav-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.nav-item:hover {
+  background: var(--panel-2);
+  color: var(--white);
+}
+.nav-item.active {
+  background: var(--panel-2);
+  color: var(--yellow);
+  box-shadow: inset 3px 0 0 var(--yellow);
+}
+
+.sidebar-logout {
+  width: 100%;
+}
+
+/* ---- Content area ---- */
+.content-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
 
 .topbar {
   background: var(--panel);
@@ -168,18 +244,22 @@ a { color: var(--yellow); }
   align-items: center;
   justify-content: space-between;
 }
-.topbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.topbar-brand .mini-word {
+.topbar .mini-word {
   font-family: var(--font-display);
   font-size: 20px;
   letter-spacing: 0.5px;
 }
-.topbar-brand .mini-word .rock { color: var(--yellow); }
-.topbar-brand .mini-word .dog { color: var(--white); }
+.topbar .mini-word .rock { color: var(--yellow); }
+.topbar .mini-word .dog { color: var(--white); }
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white);
+  margin: 0;
+}
 
 .btn-ghost {
   background: transparent;
@@ -196,27 +276,30 @@ a { color: var(--yellow); }
 }
 
 .main {
+  flex: 1;
   max-width: 960px;
+  width: 100%;
   margin: 0 auto;
-  padding: 32px 20px 60px;
+  padding: 28px 20px 100px;
 }
 
 .welcome h1 {
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 26px;
   letter-spacing: 0.5px;
   margin: 0 0 4px;
   text-transform: uppercase;
+  color: var(--white);
 }
 .welcome p {
-  color: var(--gray);
+  color: #b7b7bb;
   margin: 0 0 28px;
   font-size: 14px;
 }
 
 .module-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
 }
 
@@ -224,43 +307,50 @@ a { color: var(--yellow); }
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
+  padding: 18px 20px 20px;
 }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
 .module-card .tag {
   display: inline-block;
   font-size: 10px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--gray);
+  color: #b7b7bb;
   border: 1px solid var(--line);
   border-radius: 100px;
   padding: 3px 9px;
-  margin-bottom: 14px;
+  white-space: nowrap;
 }
-.module-card h3 {
-  font-family: var(--font-display);
-  font-size: 18px;
-  letter-spacing: 0.3px;
+
+.badge-soon {
+  font-size: 10px;
+  letter-spacing: 1px;
   text-transform: uppercase;
+  color: var(--yellow);
+  white-space: nowrap;
+}
+
+.module-card h3 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.2px;
   margin: 0 0 6px;
+  color: #ffffff;
 }
 .module-card p {
   font-size: 13px;
-  color: var(--gray);
+  color: #b7b7bb;
   margin: 0;
   line-height: 1.5;
-}
-.module-card.soon::after {
-  content: "Em breve";
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  font-size: 10px;
-  color: var(--yellow-dim);
-  letter-spacing: 1px;
-  text-transform: uppercase;
 }
 
 .loading-screen {
@@ -272,6 +362,69 @@ a { color: var(--yellow); }
   font-size: 13px;
   letter-spacing: 1px;
   text-transform: uppercase;
+}
+
+/* ---- Bottom nav (mobile) ---- */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  z-index: 20;
+}
+.bottom-nav .nav-item {
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 4px;
+  font-size: 10px;
+  border-radius: 8px;
+}
+.bottom-nav .nav-item.active {
+  box-shadow: none;
+  background: var(--panel-2);
+}
+
+/* ---- Toast ---- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  color: var(--white);
+  padding: 10px 18px;
+  border-radius: 100px;
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 30;
+  white-space: nowrap;
+}
+.toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ==========================================================================
+   Responsive breakpoints
+   ========================================================================== */
+
+/* Desktop: sidebar visible, bottom nav hidden, topbar shows page title not brand */
+@media (min-width: 900px) {
+  .sidebar { display: flex; }
+  .bottom-nav { display: none; }
+  .mobile-only { display: none; }
+  .desktop-only { display: block; }
+  .main { padding-bottom: 60px; }
+  .toast { bottom: 30px; }
 }
 
 @media (max-width: 420px) {
