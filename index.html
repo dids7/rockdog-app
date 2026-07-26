@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rock Dog · Painel de Controle</title>
+
+<meta name="theme-color" content="#0b0b0c" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/icon-180.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Tela de carregamento inicial, enquanto o Firebase checa se já existe login -->
+<div id="loading-screen" class="loading-screen">Carregando...</div>
+
+<!-- Tela de login -->
+<div id="login-screen" class="login-screen" style="display:none;">
+  <div class="login-card">
+    <h1 class="wordmark">
+      <span class="rock">Rock</span><span class="dog">Dog</span>
+    </h1>
+    <p class="tagline">Painel de Controle</p>
+
+    <span class="drip">
+      <svg viewBox="0 0 300 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,0 H300 V3 C280,3 275,13 265,13 C255,13 253,4 245,4 C237,4 234,10 226,10 C218,10 216,2 205,2 C194,2 192,9 182,9 C172,9 171,3 160,3 C149,3 148,11 138,11 C128,11 126,2 116,2 C106,2 104,8 95,8 C86,8 85,1 75,1 C65,1 63,7 54,7 C45,7 44,2 34,2 C24,2 22,6 12,6 C6,6 3,3 0,3 Z" fill="#ffcc00" opacity="0.9"/>
+      </svg>
+    </span>
+
+    <form id="login-form" novalidate>
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label for="password">Senha</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="btn-primary" id="login-btn">Entrar</button>
+      <p class="login-error" id="login-error"></p>
+    </form>
+  </div>
+</div>
+
+<!-- App autenticado -->
+<div id="app-shell" class="app-shell">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <p class="mini-word"><span class="rock">Rock</span><span class="dog">Dog</span></p>
+    </div>
+    <button class="btn-ghost" id="logout-btn">Sair</button>
+  </div>
+
+  <div class="main">
+    <div class="welcome">
+      <h1>Bem-vindo</h1>
+      <p id="user-email-display">Painel de controle do Rock Dog</p>
+    </div>
+
+    <div class="module-grid">
+      <div class="module-card soon">
+        <span class="tag">Estoque</span>
+        <h3>Ingredientes</h3>
+        <p>Controle de quantidade e avisos de reposição.</p>
+      </div>
+      <div class="module-card soon">
+        <span class="tag">Vendas</span>
+        <h3>Pedidos</h3>
+        <p>Registro de pedidos e baixa automática do estoque.</p>
+      </div>
+      <div class="module-card soon">
+        <span class="tag">Base</span>
+        <h3>Clientes</h3>
+        <p>Cadastro e histórico de quem já pediu.</p>
+      </div>
+      <div class="module-card soon">
+        <span class="tag">Análise</span>
+        <h3>Relatórios</h3>
+        <p>Vendas, consumo de ingredientes e mais.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
