@@ -20,8 +20,12 @@ import {
 } from "./firebase-config.js";
 import { confirmDialog, promptDialog, alertDialog } from "./ui-dialog.js";
 
-const CATEGORIAS = ["Carnes", "Pães", "Molhos", "Guarnições", "Bebidas", "Embalagens", "Outros"];
+const CATEGORIAS = ["Pães", "Carnes", "Guarnições", "Molhos", "Bebidas", "Embalagens", "Outros"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade", "pacote", "caixa"];
+
+// Ordem de exibição das categorias na lista (segue a ordem de montagem do lanche).
+// Categorias novas que não estejam aqui aparecem no final, na ordem em que forem encontradas.
+const ORDEM_CATEGORIAS = ["Pães", "Carnes", "Guarnições", "Molhos", "Bebidas", "Embalagens"];
 
 // Ingredientes iniciais do Rock Dog, baseados no cardápio.
 // Ficam com quantidade 0 — é só uma base pronta pra você ajustar os números reais.
@@ -119,7 +123,14 @@ function renderLista() {
     porCategoria[item.categoria].push(item);
   });
 
-  const categoriasComItens = Object.keys(porCategoria).sort();
+  const categoriasComItens = Object.keys(porCategoria).sort((a, b) => {
+    const posA = ORDEM_CATEGORIAS.indexOf(a);
+    const posB = ORDEM_CATEGORIAS.indexOf(b);
+    if (posA === -1 && posB === -1) return a.localeCompare(b);
+    if (posA === -1) return 1;
+    if (posB === -1) return -1;
+    return posA - posB;
+  });
 
   if (categoriasComItens.length === 0) {
     listContainer.innerHTML = `<p class="empty-state">Nenhum ingrediente cadastrado ainda.</p>`;
