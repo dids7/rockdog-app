@@ -187,9 +187,16 @@ function attachRowEvents() {
 }
 
 async function ajustarQuantidade(item, direcao) {
+  const passo = ["kg", "L"].includes(item.unidade) ? 0.1 : 1;
   const valorTexto = await promptDialog(
     `${direcao === "mais" ? "Adicionar" : "Retirar"} quantas ${item.unidade} de "${item.nome}"?`,
-    { title: direcao === "mais" ? "Adicionar ao estoque" : "Retirar do estoque", defaultValue: "1", inputType: "number", confirmLabel: "Confirmar" }
+    {
+      title: direcao === "mais" ? "Adicionar ao estoque" : "Retirar do estoque",
+      defaultValue: "1",
+      inputType: "number",
+      step: passo,
+      confirmLabel: "Confirmar"
+    }
   );
   if (valorTexto === null) return;
   const valor = parseFloat(String(valorTexto).replace(",", "."));

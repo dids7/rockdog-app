@@ -30,7 +30,11 @@ html, body {
   background: var(--bg);
   color: var(--white);
   font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--yellow);
+  color: #16130a;
 }
 
 button {
@@ -670,3 +674,53 @@ select:focus { border-color: var(--yellow); }
   color: #ffffff;
 }
 .btn-danger:hover { background: #f0693d; }
+
+/* ---- Contador numérico (substitui o input number nativo) ---- */
+.stepper {
+  display: flex;
+  align-items: stretch;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.stepper:focus-within {
+  border-color: var(--yellow);
+}
+.stepper-btn {
+  background: var(--panel-2);
+  border: none;
+  color: var(--yellow);
+  width: 48px;
+  flex-shrink: 0;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.stepper-btn:hover { background: #2a2a2f; }
+.stepper-btn:active { background: #333338; }
+
+.stepper-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 18px;
+  text-align: center;
+  padding: 12px 6px;
+}
+.stepper-input::-webkit-outer-spin-button,
+.stepper-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.stepper-input {
+  -moz-appearance: textfield;
+}

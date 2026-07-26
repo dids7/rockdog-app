@@ -12,8 +12,19 @@ const titleEl = document.getElementById("dialog-title");
 const messageEl = document.getElementById("dialog-message");
 const inputWrap = document.getElementById("dialog-input-wrap");
 const inputEl = document.getElementById("dialog-input");
+const decrementBtn = document.getElementById("dialog-decrement");
+const incrementBtn = document.getElementById("dialog-increment");
 const cancelBtn = document.getElementById("dialog-cancel");
 const confirmBtn = document.getElementById("dialog-confirm");
+
+function parseNumber(value) {
+  const n = parseFloat(String(value).replace(",", "."));
+  return isNaN(n) ? 0 : n;
+}
+
+function formatNumber(value) {
+  return Number.isInteger(value) ? String(value) : String(Math.round(value * 100) / 100);
+}
 
 function openDialog({
   title,
@@ -21,6 +32,7 @@ function openDialog({
   showInput = false,
   inputValue = "",
   inputType = "text",
+  step = 1,
   showCancel = true,
   confirmLabel = "Confirmar",
   danger = false
@@ -31,7 +43,6 @@ function openDialog({
 
     inputWrap.hidden = !showInput;
     if (showInput) {
-      inputEl.type = inputType;
       inputEl.value = inputValue;
     }
 
@@ -49,11 +60,20 @@ function openDialog({
       setTimeout(() => confirmBtn.focus(), 50);
     }
 
+    function onIncrement() {
+      inputEl.value = formatNumber(parseNumber(inputEl.value) + step);
+    }
+    function onDecrement() {
+      inputEl.value = formatNumber(Math.max(0, parseNumber(inputEl.value) - step));
+    }
+
     function cleanup() {
       overlay.classList.remove("visible");
       confirmBtn.classList.remove("btn-danger");
       confirmBtn.removeEventListener("click", onConfirm);
       cancelBtn.removeEventListener("click", onCancel);
+      incrementBtn.removeEventListener("click", onIncrement);
+      decrementBtn.removeEventListener("click", onDecrement);
       document.removeEventListener("keydown", onKeydown);
     }
 
@@ -75,6 +95,8 @@ function openDialog({
 
     confirmBtn.addEventListener("click", onConfirm);
     cancelBtn.addEventListener("click", onCancel);
+    incrementBtn.addEventListener("click", onIncrement);
+    decrementBtn.addEventListener("click", onDecrement);
     document.addEventListener("keydown", onKeydown);
   });
 }
@@ -96,6 +118,7 @@ export function promptDialog(message, opts = {}) {
     showInput: true,
     inputValue: opts.defaultValue || "",
     inputType: opts.inputType || "text",
+    step: opts.step || 1,
     showCancel: true,
     confirmLabel: opts.confirmLabel || "OK"
   });

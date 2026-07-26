@@ -223,7 +223,11 @@
       <h3 id="dialog-title" class="dialog-title"></h3>
       <p id="dialog-message" class="dialog-message"></p>
       <div id="dialog-input-wrap" class="field" hidden>
-        <input type="text" id="dialog-input" />
+        <div class="stepper" id="dialog-stepper">
+          <button type="button" class="stepper-btn" id="dialog-decrement">−</button>
+          <input type="text" inputmode="decimal" id="dialog-input" class="stepper-input" />
+          <button type="button" class="stepper-btn" id="dialog-increment">+</button>
+        </div>
       </div>
       <div class="modal-actions">
         <button type="button" class="btn-ghost" id="dialog-cancel">Cancelar</button>
