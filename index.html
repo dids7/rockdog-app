@@ -52,42 +52,112 @@
 
 <!-- App autenticado -->
 <div id="app-shell" class="app-shell">
-  <div class="topbar">
-    <div class="topbar-brand">
-      <p class="mini-word"><span class="rock">Rock</span><span class="dog">Dog</span></p>
+
+  <!-- Sidebar: visível só em telas largas (PC) -->
+  <aside class="sidebar">
+    <p class="mini-word"><span class="rock">Rock</span><span class="dog">Dog</span></p>
+    <nav class="nav-list">
+      <button class="nav-item active" data-nav="painel">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 12L12 4L20 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10V19C6 19.5523 6.44772 20 7 20H17C17.5523 20 18 19.5523 18 19V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Painel</span>
+      </button>
+      <button class="nav-item" data-nav="estoque">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M3 7L12 3L21 7V17L12 21L3 17V7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 7L12 11L21 7" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 11V21" stroke="currentColor" stroke-width="2"/></svg>
+        <span>Estoque</span>
+      </button>
+      <button class="nav-item" data-nav="pedidos">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M6 2L4 5V20C4 20.5523 4.44772 21 5 21H19C19.5523 21 20 20.5523 20 20V5L18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 5H20" stroke="currentColor" stroke-width="2"/><path d="M9 9C9 10.1046 9.89543 11 11 11H13C14.1046 11 15 10.1046 15 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Pedidos</span>
+      </button>
+      <button class="nav-item" data-nav="clientes">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="2"/><path d="M2.5 20C2.5 16 5.5 14 9 14C12.5 14 15.5 16 15.5 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M15 9C16.1046 9 17 8.10457 17 7C17 5.89543 16.1046 5 15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 14.2C19 14.7 21 16.4 21 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Clientes</span>
+      </button>
+      <button class="nav-item" data-nav="relatorios">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 20V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M11 20V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 20V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Relatórios</span>
+      </button>
+    </nav>
+    <button class="btn-ghost sidebar-logout" id="logout-btn-desktop">Sair</button>
+  </aside>
+
+  <div class="content-area">
+    <!-- Topbar: visível em todas as telas, mas com brand só no mobile -->
+    <div class="topbar">
+      <p class="mini-word mobile-only"><span class="rock">Rock</span><span class="dog">Dog</span></p>
+      <p class="page-title desktop-only">Painel</p>
+      <button class="btn-ghost" id="logout-btn">Sair</button>
     </div>
-    <button class="btn-ghost" id="logout-btn">Sair</button>
+
+    <div class="main">
+      <div class="welcome">
+        <h1>Bem-vindo</h1>
+        <p id="user-email-display">Painel de controle do Rock Dog</p>
+      </div>
+
+      <div class="module-grid">
+        <div class="module-card soon">
+          <div class="card-header">
+            <span class="tag">Estoque</span>
+            <span class="badge-soon">Em breve</span>
+          </div>
+          <h3>Ingredientes</h3>
+          <p>Controle de quantidade e avisos de reposição.</p>
+        </div>
+        <div class="module-card soon">
+          <div class="card-header">
+            <span class="tag">Vendas</span>
+            <span class="badge-soon">Em breve</span>
+          </div>
+          <h3>Pedidos</h3>
+          <p>Registro de pedidos e baixa automática do estoque.</p>
+        </div>
+        <div class="module-card soon">
+          <div class="card-header">
+            <span class="tag">Base</span>
+            <span class="badge-soon">Em breve</span>
+          </div>
+          <h3>Clientes</h3>
+          <p>Cadastro e histórico de quem já pediu.</p>
+        </div>
+        <div class="module-card soon">
+          <div class="card-header">
+            <span class="tag">Análise</span>
+            <span class="badge-soon">Em breve</span>
+          </div>
+          <h3>Relatórios</h3>
+          <p>Vendas, consumo de ingredientes e mais.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom nav: visível só em telas estreitas (celular) -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-nav="painel">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 12L12 4L20 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10V19C6 19.5523 6.44772 20 7 20H17C17.5523 20 18 19.5523 18 19V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Painel</span>
+      </button>
+      <button class="nav-item" data-nav="estoque">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M3 7L12 3L21 7V17L12 21L3 17V7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 7L12 11L21 7" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 11V21" stroke="currentColor" stroke-width="2"/></svg>
+        <span>Estoque</span>
+      </button>
+      <button class="nav-item" data-nav="pedidos">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M6 2L4 5V20C4 20.5523 4.44772 21 5 21H19C19.5523 21 20 20.5523 20 20V5L18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 5H20" stroke="currentColor" stroke-width="2"/><path d="M9 9C9 10.1046 9.89543 11 11 11H13C14.1046 11 15 10.1046 15 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Pedidos</span>
+      </button>
+      <button class="nav-item" data-nav="clientes">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="2"/><path d="M2.5 20C2.5 16 5.5 14 9 14C12.5 14 15.5 16 15.5 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M15 9C16.1046 9 17 8.10457 17 7C17 5.89543 16.1046 5 15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 14.2C19 14.7 21 16.4 21 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Clientes</span>
+      </button>
+      <button class="nav-item" data-nav="relatorios">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 20V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M11 20V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 20V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Relatórios</span>
+      </button>
+    </nav>
   </div>
 
-  <div class="main">
-    <div class="welcome">
-      <h1>Bem-vindo</h1>
-      <p id="user-email-display">Painel de controle do Rock Dog</p>
-    </div>
-
-    <div class="module-grid">
-      <div class="module-card soon">
-        <span class="tag">Estoque</span>
-        <h3>Ingredientes</h3>
-        <p>Controle de quantidade e avisos de reposição.</p>
-      </div>
-      <div class="module-card soon">
-        <span class="tag">Vendas</span>
-        <h3>Pedidos</h3>
-        <p>Registro de pedidos e baixa automática do estoque.</p>
-      </div>
-      <div class="module-card soon">
-        <span class="tag">Base</span>
-        <h3>Clientes</h3>
-        <p>Cadastro e histórico de quem já pediu.</p>
-      </div>
-      <div class="module-card soon">
-        <span class="tag">Análise</span>
-        <h3>Relatórios</h3>
-        <p>Vendas, consumo de ingredientes e mais.</p>
-      </div>
-    </div>
-  </div>
+  <!-- Toast simples para avisos rápidos ("em breve", erros, confirmações) -->
+  <div id="toast" class="toast"></div>
 </div>
 
 <script type="module" src="app.js"></script>
