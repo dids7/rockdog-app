@@ -451,6 +451,16 @@ a { color: var(--yellow); }
   .wordmark { font-size: 36px; }
 }
 
+@media (max-width: 899px) {
+  .view-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .view-header .btn-compact {
+    width: 100%;
+  }
+}
+
 /* ==========================================================================
    Views (Painel / Estoque / ...)
    ========================================================================== */
