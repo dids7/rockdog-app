@@ -24,10 +24,13 @@ const STATUS_OPCOES = ["Em preparo", "Saiu para entrega", "Entregue", "Cancelado
 let unsubPedidos = null;
 let unsubCardapio = null;
 let unsubIngredientes = null;
+let unsubClientes = null;
 let cardapioCache = [];
 let ingredientesCache = [];
 let pedidosCache = [];
+let clientesCache = [];
 let carrinho = {}; // { itemId: quantidade }
+let clienteSelecionadoId = null;
 
 // Elementos da tela
 const listContainer = document.getElementById("pedidos-lista");
@@ -40,10 +43,12 @@ const itensContainer = document.getElementById("pedido-itens-cardapio");
 const totalTexto = document.getElementById("pedido-total-texto");
 const inputClienteNome = document.getElementById("pedido-cliente-nome");
 const inputClienteTelefone = document.getElementById("pedido-cliente-telefone");
+const sugestoesContainer = document.getElementById("pedido-cliente-sugestoes");
 
 function ingredientesCollection() { return collection(db, "ingredientes"); }
 function cardapioCollection() { return collection(db, "cardapio"); }
 function pedidosCollection() { return collection(db, "pedidos"); }
+function clientesCollection() { return collection(db, "clientes"); }
 
 function formatPreco(valor) {
   return `R$ ${valor.toFixed(2).replace(".", ",")}`;
@@ -80,12 +85,21 @@ function watchIngredientes() {
   });
 }
 
+function watchClientes() {
+  const q = query(clientesCollection(), where("negocioId", "==", NEGOCIO_ID));
+  return onSnapshot(q, (snapshot) => {
+    clientesCache = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+  });
+}
+
 /* ---------------- Modal / carrinho ---------------- */
 
 function abrirModalPedido() {
   carrinho = {};
+  clienteSelecionadoId = null;
   inputClienteNome.value = "";
   inputClienteTelefone.value = "";
+  sugestoesContainer.classList.remove("visible");
   renderItensCarrinho();
   atualizarTotal();
   modal.classList.add("visible");
@@ -94,6 +108,49 @@ function abrirModalPedido() {
 function fecharModalPedido() {
   modal.classList.remove("visible");
   carrinho = {};
+  clienteSelecionadoId = null;
+}
+
+function renderSugestoes(termo) {
+  const termoLimpo = termo.trim().toLowerCase();
+  if (!termoLimpo) {
+    sugestoesContainer.classList.remove("visible");
+    sugestoesContainer.innerHTML = "";
+    return;
+  }
+
+  const combinados = clientesCache
+    .filter((c) => c.nome.toLowerCase().startsWith(termoLimpo))
+    .slice(0, 6);
+
+  if (combinados.length === 0) {
+    sugestoesContainer.classList.remove("visible");
+    sugestoesContainer.innerHTML = "";
+    return;
+  }
+
+  sugestoesContainer.innerHTML = combinados
+    .map(
+      (c) =>
+        `<div class="autocomplete-item" data-id="${c.id}">
+          <span>${c.nome}</span>
+          <span class="autocomplete-item-sub">${c.telefone || ""}</span>
+        </div>`
+    )
+    .join("");
+  sugestoesContainer.classList.add("visible");
+
+  sugestoesContainer.querySelectorAll(".autocomplete-item").forEach((el) => {
+    el.addEventListener("click", () => {
+      const cliente = clientesCache.find((c) => c.id === el.dataset.id);
+      if (!cliente) return;
+      clienteSelecionadoId = cliente.id;
+      inputClienteNome.value = cliente.nome;
+      inputClienteTelefone.value = cliente.telefone || "";
+      sugestoesContainer.classList.remove("visible");
+      sugestoesContainer.innerHTML = "";
+    });
+  });
 }
 
 function renderItensCarrinho() {
@@ -240,6 +297,7 @@ async function finalizarPedido() {
 
   const novoPedidoRef = doc(pedidosCollection());
   batch.set(novoPedidoRef, {
+    clienteId: clienteSelecionadoId,
     clienteNome: inputClienteNome.value.trim() || "Cliente não identificado",
     clienteTelefone: inputClienteTelefone.value.trim(),
     itens: itensCarrinho,
@@ -249,6 +307,14 @@ async function finalizarPedido() {
     criadoEm: serverTimestamp(),
     atualizadoEm: serverTimestamp()
   });
+
+  if (clienteSelecionadoId) {
+    batch.update(doc(db, "clientes", clienteSelecionadoId), {
+      contadorPedidos: increment(1),
+      ultimoPedidoEm: serverTimestamp(),
+      atualizadoEm: serverTimestamp()
+    });
+  }
 
   await batch.commit();
   fecharModalPedido();
@@ -347,6 +413,7 @@ async function updateDocStatus(pedidoId, novoStatus) {
 export function initPedidosModule() {
   unsubCardapio = watchCardapio();
   unsubIngredientes = watchIngredientes();
+  unsubClientes = watchClientes();
 
   const q = query(pedidosCollection(), where("negocioId", "==", NEGOCIO_ID));
   unsubPedidos = onSnapshot(q, (snapshot) => {
@@ -358,14 +425,27 @@ export function initPedidosModule() {
   btnFecharModal.addEventListener("click", fecharModalPedido);
   btnCancelarModal.addEventListener("click", fecharModalPedido);
   btnFinalizar.addEventListener("click", finalizarPedido);
+
+  inputClienteNome.addEventListener("input", () => {
+    clienteSelecionadoId = null;
+    renderSugestoes(inputClienteNome.value);
+  });
+  inputClienteNome.addEventListener("blur", () => {
+    setTimeout(() => sugestoesContainer.classList.remove("visible"), 150);
+  });
+  inputClienteNome.addEventListener("focus", () => {
+    if (inputClienteNome.value.trim()) renderSugestoes(inputClienteNome.value);
+  });
 }
 
 export function stopPedidosModule() {
   if (unsubPedidos) { unsubPedidos(); unsubPedidos = null; }
   if (unsubCardapio) { unsubCardapio(); unsubCardapio = null; }
   if (unsubIngredientes) { unsubIngredientes(); unsubIngredientes = null; }
+  if (unsubClientes) { unsubClientes(); unsubClientes = null; }
   cardapioCache = [];
   ingredientesCache = [];
   pedidosCache = [];
+  clientesCache = [];
   carrinho = {};
 }

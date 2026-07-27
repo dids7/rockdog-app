@@ -2,7 +2,7 @@
 // Cache básico só para permitir instalação do PWA e funcionamento offline
 // da casca do app (não faz cache de dados do Firestore, esses são sempre ao vivo).
 
-const CACHE_NAME = "rockdog-shell-v10";
+const CACHE_NAME = "rockdog-shell-v11";
 const SHELL_FILES = [
   "./index.html",
   "./style.css",
@@ -10,6 +10,7 @@ const SHELL_FILES = [
   "./estoque.js",
   "./cardapio.js",
   "./pedidos.js",
+  "./clientes.js",
   "./ui-dialog.js",
   "./firebase-config.js",
   "./manifest.json",

@@ -13,6 +13,7 @@ import {
 import { initEstoqueModule, stopEstoqueModule } from "./estoque.js";
 import { initCardapioModule, stopCardapioModule } from "./cardapio.js";
 import { initPedidosModule, stopPedidosModule } from "./pedidos.js";
+import { initClientesModule, stopClientesModule } from "./clientes.js";
 
 const loadingScreen = document.getElementById("loading-screen");
 const loginScreen = document.getElementById("login-screen");
@@ -34,7 +35,7 @@ function showToast(message) {
   toastTimeout = setTimeout(() => toast.classList.remove("visible"), 2200);
 }
 
-const AVAILABLE_VIEWS = ["painel", "estoque", "cardapio", "pedidos"];
+const AVAILABLE_VIEWS = ["painel", "estoque", "cardapio", "pedidos", "clientes"];
 
 const NAV_LABELS = {
   painel: "Painel",
@@ -103,6 +104,7 @@ function showApp(user) {
     initEstoqueModule();
     initCardapioModule();
     initPedidosModule();
+    initClientesModule();
   }
 }
 
@@ -116,6 +118,7 @@ onAuthStateChanged(auth, (user) => {
       stopEstoqueModule();
       stopCardapioModule();
       stopPedidosModule();
+      stopClientesModule();
       estoqueIniciado = false;
     }
     showLogin();

@@ -122,10 +122,9 @@
             <h3>Pedidos</h3>
             <p>Registro de pedidos e baixa automática do estoque.</p>
           </button>
-          <button class="module-card soon" data-nav="clientes" type="button">
+          <button class="module-card" data-nav="clientes" type="button">
             <div class="card-header">
               <span class="tag">Base</span>
-              <span class="badge-soon">Em breve</span>
             </div>
             <h3>Clientes</h3>
             <p>Cadastro e histórico de quem já pediu.</p>
@@ -184,6 +183,20 @@
 
         <div id="pedidos-lista" class="estoque-lista">
           <p class="empty-state">Carregando pedidos...</p>
+        </div>
+      </div>
+
+      <div id="view-clientes" class="view">
+        <div class="view-header">
+          <div>
+            <h1>Clientes</h1>
+            <p class="view-subtitle">Cadastro e histórico de pedidos</p>
+          </div>
+          <button class="btn-primary btn-compact" id="btn-novo-cliente">+ Novo cliente</button>
+        </div>
+
+        <div id="clientes-lista" class="estoque-lista">
+          <p class="empty-state">Carregando clientes...</p>
         </div>
       </div>
     </div>
@@ -324,9 +337,10 @@
       </div>
 
       <div class="field-row">
-        <div class="field">
+        <div class="field autocomplete-wrap">
           <label for="pedido-cliente-nome">Cliente</label>
-          <input type="text" id="pedido-cliente-nome" placeholder="Nome" />
+          <input type="text" id="pedido-cliente-nome" placeholder="Digite pra buscar ou cadastre um novo" autocomplete="off" />
+          <div id="pedido-cliente-sugestoes" class="autocomplete-list"></div>
         </div>
         <div class="field">
           <label for="pedido-cliente-telefone">Telefone</label>
@@ -343,6 +357,30 @@
           <button type="button" class="btn-primary btn-compact" id="btn-finalizar-pedido">Finalizar pedido</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal de cadastro/edição de cliente -->
+  <div id="modal-cliente" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-cliente-titulo">Novo cliente</h3>
+        <button class="btn-icon" id="btn-fechar-modal-cliente" type="button">✕</button>
+      </div>
+      <form id="form-cliente">
+        <div class="field">
+          <label for="cliente-nome">Nome</label>
+          <input type="text" id="cliente-nome" required />
+        </div>
+        <div class="field">
+          <label for="cliente-telefone">Telefone</label>
+          <input type="text" id="cliente-telefone" placeholder="(11) 99999-9999" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="btn-cancelar-cliente">Cancelar</button>
+          <button type="submit" class="btn-primary btn-compact">Salvar</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

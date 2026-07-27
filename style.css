@@ -838,6 +838,44 @@ select:focus { border-color: var(--yellow); }
   font-size: 12px;
 }
 
+/* ---- Autocomplete de cliente (no pedido) ---- */
+.autocomplete-wrap {
+  position: relative;
+}
+.autocomplete-list {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 10;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.autocomplete-list.visible { display: block; }
+
+.autocomplete-item {
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  border-bottom: 1px solid var(--line);
+}
+.autocomplete-item:last-child { border-bottom: none; }
+.autocomplete-item:hover { background: #2a2a2f; }
+.autocomplete-item-sub {
+  color: #9a9a9e;
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+
 /* ---- Contador numérico (substitui o input number nativo) ---- */
 .stepper {
   display: flex;
