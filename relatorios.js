@@ -10,12 +10,23 @@ let pedidosCache = [];
 let periodoAtual = "7dias";
 
 const filtrosContainer = document.getElementById("periodo-filtros");
+const btnWhatsapp = document.getElementById("btn-enviar-whatsapp");
 const statTotalVendido = document.getElementById("stat-total-vendido");
 const statNumPedidos = document.getElementById("stat-num-pedidos");
 const statTicketMedio = document.getElementById("stat-ticket-medio");
 const rankingItens = document.getElementById("ranking-itens");
 const rankingClientes = document.getElementById("ranking-clientes");
 const rankingIngredientes = document.getElementById("ranking-ingredientes");
+
+const LABEL_PERIODO = {
+  hoje: "Hoje",
+  "7dias": "Últimos 7 dias",
+  mes: "Este mês",
+  tudo: "Desde o início"
+};
+
+// Guarda os últimos dados calculados, pra montar a mensagem do WhatsApp sem recalcular
+let ultimoResultado = null;
 
 function pedidosCollection() {
   return collection(db, "pedidos");
@@ -115,12 +126,16 @@ function calcularConsumoIngredientes(pedidosFiltrados) {
 function renderTudo() {
   const filtrados = filtrarPorPeriodo(pedidosCache, periodoAtual);
   const { totalVendido, numPedidos, ticketMedio } = calcularEstatisticas(filtrados);
+  const itens = calcularRankingItens(filtrados);
+  const clientes = calcularRankingClientes(filtrados);
+  const ingredientes = calcularConsumoIngredientes(filtrados);
+
+  ultimoResultado = { totalVendido, numPedidos, ticketMedio, itens, clientes, ingredientes };
 
   statTotalVendido.textContent = formatPreco(totalVendido);
   statNumPedidos.textContent = String(numPedidos);
   statTicketMedio.textContent = formatPreco(ticketMedio);
 
-  const itens = calcularRankingItens(filtrados);
   rankingItens.innerHTML =
     itens.length === 0
       ? `<p class="empty-state">Sem dados no período.</p>`
@@ -138,7 +153,6 @@ function renderTudo() {
           )
           .join("");
 
-  const clientes = calcularRankingClientes(filtrados);
   rankingClientes.innerHTML =
     clientes.length === 0
       ? `<p class="empty-state">Sem dados no período.</p>`
@@ -156,7 +170,6 @@ function renderTudo() {
           )
           .join("");
 
-  const ingredientes = calcularConsumoIngredientes(filtrados);
   rankingIngredientes.innerHTML =
     ingredientes.length === 0
       ? `<p class="empty-state">Sem dados no período.</p>`
@@ -174,6 +187,45 @@ function renderTudo() {
           .join("");
 }
 
+function montarTextoWhatsApp() {
+  if (!ultimoResultado) return "";
+  const { totalVendido, numPedidos, ticketMedio, itens, clientes, ingredientes } = ultimoResultado;
+
+  let texto = `*Relatório Rock Dog* — ${LABEL_PERIODO[periodoAtual]}\n\n`;
+  texto += `💰 Total vendido: ${formatPreco(totalVendido)}\n`;
+  texto += `🧾 Pedidos: ${numPedidos}\n`;
+  texto += `📊 Ticket médio: ${formatPreco(ticketMedio)}\n`;
+
+  if (itens.length > 0) {
+    texto += `\n*Itens mais vendidos:*\n`;
+    itens.slice(0, 5).forEach((i, idx) => {
+      texto += `${idx + 1}. ${i.nome} — ${formatQuantidade(i.quantidade)}x (${formatPreco(i.valor)})\n`;
+    });
+  }
+
+  if (clientes.length > 0) {
+    texto += `\n*Clientes que mais pediram:*\n`;
+    clientes.slice(0, 5).forEach((c, idx) => {
+      texto += `${idx + 1}. ${c.nome} — ${c.pedidos} pedido${c.pedidos === 1 ? "" : "s"} (${formatPreco(c.total)})\n`;
+    });
+  }
+
+  if (ingredientes.length > 0) {
+    texto += `\n*Consumo de ingredientes:*\n`;
+    ingredientes.slice(0, 8).forEach((i) => {
+      texto += `• ${i.nome}: ${formatQuantidade(i.quantidade)} ${i.unidade}\n`;
+    });
+  }
+
+  return texto;
+}
+
+function enviarPeloWhatsApp() {
+  const texto = montarTextoWhatsApp();
+  const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+  window.open(url, "_blank");
+}
+
 function selecionarPeriodo(periodo) {
   periodoAtual = periodo;
   filtrosContainer.querySelectorAll(".periodo-btn").forEach((btn) => {
@@ -187,6 +239,8 @@ export function initRelatoriosModule() {
     btn.classList.toggle("active", btn.dataset.periodo === periodoAtual);
     btn.addEventListener("click", () => selecionarPeriodo(btn.dataset.periodo));
   });
+
+  btnWhatsapp.addEventListener("click", enviarPeloWhatsApp);
 
   const q = query(pedidosCollection(), where("negocioId", "==", NEGOCIO_ID));
   unsubPedidos = onSnapshot(q, (snapshot) => {
