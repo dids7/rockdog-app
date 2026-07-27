@@ -886,6 +886,66 @@ select:focus { border-color: var(--yellow); }
   font-family: var(--font-mono);
 }
 
+/* ---- Relatórios ---- */
+.periodo-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.periodo-btn {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--gray);
+  border-radius: 100px;
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.periodo-btn:hover {
+  border-color: var(--yellow);
+  color: var(--white);
+}
+.periodo-btn.active {
+  background: var(--yellow);
+  border-color: var(--yellow);
+  color: #16130a;
+  font-weight: 600;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.stat-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--gray);
+  letter-spacing: 0.5px;
+  margin: 0 0 6px;
+}
+.stat-valor {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--yellow);
+  margin: 0;
+}
+
+.relatorio-secao {
+  margin-bottom: 26px;
+}
+.relatorio-secao .categoria-titulo {
+  margin-bottom: 10px;
+}
+
 /* ---- Contador numérico (substitui o input number nativo) ---- */
 .stepper {
   display: flex;

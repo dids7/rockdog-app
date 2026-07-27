@@ -129,10 +129,9 @@
             <h3>Clientes</h3>
             <p>Cadastro e histórico de quem já pediu.</p>
           </button>
-          <button class="module-card soon" data-nav="relatorios" type="button">
+          <button class="module-card" data-nav="relatorios" type="button">
             <div class="card-header">
               <span class="tag">Análise</span>
-              <span class="badge-soon">Em breve</span>
             </div>
             <h3>Relatórios</h3>
             <p>Vendas, consumo de ingredientes e mais.</p>
@@ -197,6 +196,58 @@
 
         <div id="clientes-lista" class="estoque-lista">
           <p class="empty-state">Carregando clientes...</p>
+        </div>
+      </div>
+
+      <div id="view-relatorios" class="view">
+        <div class="view-header">
+          <div>
+            <h1>Relatórios</h1>
+            <p class="view-subtitle">Vendas, itens, clientes e consumo de ingredientes</p>
+          </div>
+        </div>
+
+        <div class="periodo-filtros" id="periodo-filtros">
+          <button class="periodo-btn" data-periodo="hoje" type="button">Hoje</button>
+          <button class="periodo-btn" data-periodo="7dias" type="button">Últimos 7 dias</button>
+          <button class="periodo-btn" data-periodo="mes" type="button">Este mês</button>
+          <button class="periodo-btn" data-periodo="tudo" type="button">Tudo</button>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <p class="stat-label">Total vendido</p>
+            <p class="stat-valor" id="stat-total-vendido">R$ 0,00</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Pedidos</p>
+            <p class="stat-valor" id="stat-num-pedidos">0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Ticket médio</p>
+            <p class="stat-valor" id="stat-ticket-medio">R$ 0,00</p>
+          </div>
+        </div>
+
+        <div class="relatorio-secao">
+          <h4 class="categoria-titulo">Itens mais vendidos</h4>
+          <div id="ranking-itens" class="ingrediente-lista">
+            <p class="empty-state">Sem dados no período.</p>
+          </div>
+        </div>
+
+        <div class="relatorio-secao">
+          <h4 class="categoria-titulo">Clientes que mais pediram</h4>
+          <div id="ranking-clientes" class="ingrediente-lista">
+            <p class="empty-state">Sem dados no período.</p>
+          </div>
+        </div>
+
+        <div class="relatorio-secao">
+          <h4 class="categoria-titulo">Consumo de ingredientes</h4>
+          <div id="ranking-ingredientes" class="ingrediente-lista">
+            <p class="empty-state">Sem dados no período.</p>
+          </div>
         </div>
       </div>
     </div>
