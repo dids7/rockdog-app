@@ -54,6 +54,7 @@ function switchView(target) {
     el.classList.toggle("active", el.dataset.nav === target);
   });
   if (pageTitle) pageTitle.textContent = NAV_LABELS[target] || "Painel";
+  window.scrollTo(0, 0);
 }
 
 // Navegação (sidebar + bottom nav + cards do painel). Painel e Estoque têm
