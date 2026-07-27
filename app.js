@@ -52,9 +52,9 @@ function switchView(target) {
   if (pageTitle) pageTitle.textContent = NAV_LABELS[target] || "Painel";
 }
 
-// Navegação (sidebar + bottom nav). Painel e Estoque têm conteúdo real;
-// os outros módulos avisam que ainda estão em construção.
-document.querySelectorAll(".nav-item").forEach((btn) => {
+// Navegação (sidebar + bottom nav + cards do painel). Painel e Estoque têm
+// conteúdo real; os outros módulos avisam que ainda estão em construção.
+document.querySelectorAll(".nav-item, .module-card").forEach((btn) => {
   btn.addEventListener("click", () => {
     const target = btn.dataset.nav;
 

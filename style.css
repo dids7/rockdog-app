@@ -312,6 +312,21 @@ a { color: var(--yellow); }
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 18px 20px 20px;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.08s ease;
+}
+.module-card:hover {
+  border-color: var(--yellow);
+}
+.module-card:active {
+  transform: scale(0.99);
+}
+.module-card:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
 }
 
 .card-header {
