@@ -12,6 +12,7 @@ import {
 } from "./firebase-config.js";
 import { initEstoqueModule, stopEstoqueModule } from "./estoque.js";
 import { initCardapioModule, stopCardapioModule } from "./cardapio.js";
+import { initPedidosModule, stopPedidosModule } from "./pedidos.js";
 
 const loadingScreen = document.getElementById("loading-screen");
 const loginScreen = document.getElementById("login-screen");
@@ -33,7 +34,7 @@ function showToast(message) {
   toastTimeout = setTimeout(() => toast.classList.remove("visible"), 2200);
 }
 
-const AVAILABLE_VIEWS = ["painel", "estoque", "cardapio"];
+const AVAILABLE_VIEWS = ["painel", "estoque", "cardapio", "pedidos"];
 
 const NAV_LABELS = {
   painel: "Painel",
@@ -101,6 +102,7 @@ function showApp(user) {
     estoqueIniciado = true;
     initEstoqueModule();
     initCardapioModule();
+    initPedidosModule();
   }
 }
 
@@ -113,6 +115,7 @@ onAuthStateChanged(auth, (user) => {
     if (estoqueIniciado) {
       stopEstoqueModule();
       stopCardapioModule();
+      stopPedidosModule();
       estoqueIniciado = false;
     }
     showLogin();

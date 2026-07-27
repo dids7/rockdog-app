@@ -115,10 +115,9 @@
             <h3>Lanches</h3>
             <p>Itens vendidos, preços e receitas de cada um.</p>
           </button>
-          <button class="module-card soon" data-nav="pedidos" type="button">
+          <button class="module-card" data-nav="pedidos" type="button">
             <div class="card-header">
               <span class="tag">Vendas</span>
-              <span class="badge-soon">Em breve</span>
             </div>
             <h3>Pedidos</h3>
             <p>Registro de pedidos e baixa automática do estoque.</p>
@@ -171,6 +170,20 @@
 
         <div id="cardapio-lista" class="estoque-lista">
           <p class="empty-state">Carregando cardápio...</p>
+        </div>
+      </div>
+
+      <div id="view-pedidos" class="view">
+        <div class="view-header">
+          <div>
+            <h1>Pedidos</h1>
+            <p class="view-subtitle">Registro de vendas e baixa automática do estoque</p>
+          </div>
+          <button class="btn-primary btn-compact" id="btn-novo-pedido">+ Novo pedido</button>
+        </div>
+
+        <div id="pedidos-lista" class="estoque-lista">
+          <p class="empty-state">Carregando pedidos...</p>
         </div>
       </div>
     </div>
@@ -300,6 +313,36 @@
           <button type="submit" class="btn-primary btn-compact">Salvar</button>
         </div>
       </form>
+    </div>
+  </div>
+  <!-- Modal de novo pedido (carrinho) -->
+  <div id="modal-pedido" class="modal-overlay">
+    <div class="modal-card modal-card-wide modal-card-pedido">
+      <div class="modal-header">
+        <h3>Novo pedido</h3>
+        <button class="btn-icon" id="btn-fechar-modal-pedido" type="button">✕</button>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="pedido-cliente-nome">Cliente</label>
+          <input type="text" id="pedido-cliente-nome" placeholder="Nome" />
+        </div>
+        <div class="field">
+          <label for="pedido-cliente-telefone">Telefone</label>
+          <input type="text" id="pedido-cliente-telefone" placeholder="(11) 99999-9999" />
+        </div>
+      </div>
+
+      <div id="pedido-itens-cardapio" class="pedido-itens-cardapio"></div>
+
+      <div class="pedido-resumo">
+        <span id="pedido-total-texto" class="pedido-total-texto">Total: R$ 0,00</span>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="btn-cancelar-pedido">Cancelar</button>
+          <button type="button" class="btn-primary btn-compact" id="btn-finalizar-pedido">Finalizar pedido</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

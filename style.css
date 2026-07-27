@@ -748,6 +748,96 @@ select:focus { border-color: var(--yellow); }
   height: 36px;
 }
 
+/* ---- Pedidos: carrinho e histórico ---- */
+.modal-card-pedido {
+  max-width: 560px;
+}
+
+.pedido-itens-cardapio {
+  max-height: 340px;
+  overflow-y: auto;
+  margin: 4px 0 16px;
+  padding-right: 2px;
+}
+
+.pedido-item-linha {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.stepper-sm {
+  flex-shrink: 0;
+}
+.stepper-sm .stepper-btn {
+  width: 34px;
+  height: 34px;
+  font-size: 16px;
+}
+.stepper-sm .stepper-qty {
+  min-width: 28px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 0 4px;
+}
+
+.pedido-resumo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.pedido-total-texto {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--yellow);
+}
+
+.pedido-linha {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.pedido-hora {
+  font-size: 11px;
+  color: #9a9a9e;
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+.pedido-linha-direita {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.pedido-status-select {
+  width: auto;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
 /* ---- Contador numérico (substitui o input number nativo) ---- */
 .stepper {
   display: flex;
