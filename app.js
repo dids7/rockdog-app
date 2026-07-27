@@ -11,6 +11,7 @@ import {
   NEGOCIO_ID
 } from "./firebase-config.js";
 import { initEstoqueModule, stopEstoqueModule } from "./estoque.js";
+import { initCardapioModule, stopCardapioModule } from "./cardapio.js";
 
 const loadingScreen = document.getElementById("loading-screen");
 const loginScreen = document.getElementById("login-screen");
@@ -24,14 +25,6 @@ const userEmailDisplay = document.getElementById("user-email-display");
 const pageTitle = document.querySelector(".page-title");
 const toast = document.getElementById("toast");
 
-const NAV_LABELS = {
-  painel: "Painel",
-  estoque: "Estoque",
-  pedidos: "Pedidos",
-  clientes: "Clientes",
-  relatorios: "Relatórios"
-};
-
 let toastTimeout;
 function showToast(message) {
   toast.textContent = message;
@@ -40,7 +33,16 @@ function showToast(message) {
   toastTimeout = setTimeout(() => toast.classList.remove("visible"), 2200);
 }
 
-const AVAILABLE_VIEWS = ["painel", "estoque"];
+const AVAILABLE_VIEWS = ["painel", "estoque", "cardapio"];
+
+const NAV_LABELS = {
+  painel: "Painel",
+  estoque: "Estoque",
+  cardapio: "Cardápio",
+  pedidos: "Pedidos",
+  clientes: "Clientes",
+  relatorios: "Relatórios"
+};
 
 function switchView(target) {
   document.querySelectorAll(".view").forEach((el) => {
@@ -98,6 +100,7 @@ function showApp(user) {
   if (!estoqueIniciado) {
     estoqueIniciado = true;
     initEstoqueModule();
+    initCardapioModule();
   }
 }
 
@@ -109,6 +112,7 @@ onAuthStateChanged(auth, (user) => {
   } else {
     if (estoqueIniciado) {
       stopEstoqueModule();
+      stopCardapioModule();
       estoqueIniciado = false;
     }
     showLogin();

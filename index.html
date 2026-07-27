@@ -65,6 +65,10 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M3 7L12 3L21 7V17L12 21L3 17V7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 7L12 11L21 7" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 11V21" stroke="currentColor" stroke-width="2"/></svg>
         <span>Estoque</span>
       </button>
+      <button class="nav-item" data-nav="cardapio">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M6 3H18V21L12 18L6 21V3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 8H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 12H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Cardápio</span>
+      </button>
       <button class="nav-item" data-nav="pedidos">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M6 2L4 5V20C4 20.5523 4.44772 21 5 21H19C19.5523 21 20 20.5523 20 20V5L18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 5H20" stroke="currentColor" stroke-width="2"/><path d="M9 9C9 10.1046 9.89543 11 11 11H13C14.1046 11 15 10.1046 15 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <span>Pedidos</span>
@@ -103,6 +107,13 @@
             </div>
             <h3>Ingredientes</h3>
             <p>Controle de quantidade e avisos de reposição.</p>
+          </button>
+          <button class="module-card" data-nav="cardapio" type="button">
+            <div class="card-header">
+              <span class="tag">Cardápio</span>
+            </div>
+            <h3>Lanches</h3>
+            <p>Itens vendidos, preços e receitas de cada um.</p>
           </button>
           <button class="module-card soon" data-nav="pedidos" type="button">
             <div class="card-header">
@@ -148,6 +159,20 @@
           <p class="empty-state">Carregando ingredientes...</p>
         </div>
       </div>
+
+      <div id="view-cardapio" class="view">
+        <div class="view-header">
+          <div>
+            <h1>Cardápio</h1>
+            <p class="view-subtitle">Lanches, adicionais e bebidas vendidos</p>
+          </div>
+          <button class="btn-primary btn-compact" id="btn-novo-item">+ Novo item</button>
+        </div>
+
+        <div id="cardapio-lista" class="estoque-lista">
+          <p class="empty-state">Carregando cardápio...</p>
+        </div>
+      </div>
     </div>
 
     <!-- Bottom nav: visível só em telas estreitas (celular) -->
@@ -159,6 +184,10 @@
       <button class="nav-item" data-nav="estoque">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M3 7L12 3L21 7V17L12 21L3 17V7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 7L12 11L21 7" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 11V21" stroke="currentColor" stroke-width="2"/></svg>
         <span>Estoque</span>
+      </button>
+      <button class="nav-item" data-nav="cardapio">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M6 3H18V21L12 18L6 21V3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 8H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 12H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Cardápio</span>
       </button>
       <button class="nav-item" data-nav="pedidos">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M6 2L4 5V20C4 20.5523 4.44772 21 5 21H19C19.5523 21 20 20.5523 20 20V5L18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 5H20" stroke="currentColor" stroke-width="2"/><path d="M9 9C9 10.1046 9.89543 11 11 11H13C14.1046 11 15 10.1046 15 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -233,6 +262,44 @@
         <button type="button" class="btn-ghost" id="dialog-cancel">Cancelar</button>
         <button type="button" class="btn-primary btn-compact" id="dialog-confirm">Confirmar</button>
       </div>
+    </div>
+  </div>
+  <!-- Modal de cadastro/edição de item do cardápio -->
+  <div id="modal-item-cardapio" class="modal-overlay">
+    <div class="modal-card modal-card-wide">
+      <div class="modal-header">
+        <h3 id="modal-item-titulo">Novo item</h3>
+        <button class="btn-icon" id="btn-fechar-modal-item" type="button">✕</button>
+      </div>
+      <form id="form-item-cardapio">
+        <div class="field">
+          <label for="item-nome">Nome</label>
+          <input type="text" id="item-nome" required />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="item-tipo">Tipo</label>
+            <select id="item-tipo"></select>
+          </div>
+          <div class="field">
+            <label for="item-preco">Preço (R$)</label>
+            <input type="number" id="item-preco" step="0.01" min="0" required />
+          </div>
+        </div>
+
+        <div class="receita-section">
+          <div class="receita-section-header">
+            <label>Receita (ingredientes do estoque)</label>
+            <button type="button" class="btn-ghost btn-compact" id="btn-add-receita-linha">+ Ingrediente</button>
+          </div>
+          <div id="receita-linhas" class="receita-linhas"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="btn-cancelar-item">Cancelar</button>
+          <button type="submit" class="btn-primary btn-compact">Salvar</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
