@@ -52,11 +52,13 @@ function renderLista() {
 
 function renderLinha(cliente) {
   const pedidos = cliente.contadorPedidos || 0;
+  const endereco = cliente.endereco ? ` · ${cliente.endereco}` : "";
   return `
     <div class="ingrediente-linha" data-id="${cliente.id}">
       <div class="ingrediente-info">
         <p class="ingrediente-nome">${cliente.nome}</p>
-        <p class="ingrediente-qtd">${cliente.telefone || "sem telefone"} <span class="status-badge status-ok">${pedidos} pedido${pedidos === 1 ? "" : "s"}</span></p>
+        <p class="ingrediente-qtd">${cliente.telefone || "sem telefone"}${endereco} <span class="status-badge status-ok">${pedidos} pedido${pedidos === 1 ? "" : "s"}</span></p>
+        ${cliente.observacoes ? `<p class="receita-resumo">${cliente.observacoes}</p>` : ""}
       </div>
       <div class="ingrediente-acoes">
         <button class="btn-icon" data-action="editar" title="Editar">✎</button>
@@ -98,6 +100,8 @@ function abrirModalEdicao(cliente) {
   modalTitle.textContent = "Editar cliente";
   document.getElementById("cliente-nome").value = cliente.nome;
   document.getElementById("cliente-telefone").value = cliente.telefone || "";
+  document.getElementById("cliente-endereco").value = cliente.endereco || "";
+  document.getElementById("cliente-observacoes").value = cliente.observacoes || "";
   modal.classList.add("visible");
 }
 
@@ -111,6 +115,8 @@ async function salvarCliente(event) {
 
   const nome = document.getElementById("cliente-nome").value.trim();
   const telefone = document.getElementById("cliente-telefone").value.trim();
+  const endereco = document.getElementById("cliente-endereco").value.trim();
+  const observacoes = document.getElementById("cliente-observacoes").value.trim();
 
   if (!nome) {
     await alertDialog("Digite o nome do cliente.");
@@ -121,12 +127,16 @@ async function salvarCliente(event) {
     await updateDoc(doc(db, "clientes", editingId), {
       nome,
       telefone,
+      endereco,
+      observacoes,
       atualizadoEm: serverTimestamp()
     });
   } else {
     await addDoc(clientesCollection(), {
       nome,
       telefone,
+      endereco,
+      observacoes,
       contadorPedidos: 0,
       ultimoPedidoEm: null,
       negocioId: NEGOCIO_ID,

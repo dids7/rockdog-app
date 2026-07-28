@@ -662,6 +662,20 @@ select {
 }
 select:focus { border-color: var(--yellow); }
 
+textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 14px;
+  color: var(--white);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+}
+textarea:focus { border-color: var(--yellow); }
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -796,6 +810,10 @@ select:focus { border-color: var(--yellow); }
   font-family: var(--font-mono);
   font-size: 14px;
   padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
 }
 
 .pedido-resumo {
