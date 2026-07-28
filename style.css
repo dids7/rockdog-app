@@ -692,6 +692,10 @@ textarea:focus { border-color: var(--yellow); }
 }
 
 /* ---- Dialog genérico (confirm/prompt/alert customizados) ---- */
+#dialog-overlay {
+  z-index: 100;
+}
+
 .dialog-title {
   font-family: var(--font-display);
   font-size: 18px;
