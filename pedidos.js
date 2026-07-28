@@ -355,6 +355,9 @@ function renderListaPedidos() {
   listContainer.querySelectorAll(".pedido-status-select").forEach((select) => {
     select.addEventListener("change", (e) => onMudarStatus(e.target.dataset.id, e.target.value));
   });
+  listContainer.querySelectorAll('[data-action="reabrir"]').forEach((btn) => {
+    btn.addEventListener("click", () => reabrirPedido(btn.dataset.id));
+  });
 }
 
 function renderLinhaPedido(pedido) {
@@ -362,7 +365,10 @@ function renderLinhaPedido(pedido) {
   const finalizado = STATUS_FINALIZADOS.includes(pedido.status);
 
   const statusHtml = finalizado
-    ? `<span class="status-badge ${pedido.status === "Cancelado" ? "status-baixo" : "status-ok"}">${pedido.status}</span>`
+    ? `
+      <span class="status-badge ${pedido.status === "Cancelado" ? "status-baixo" : "status-ok"}">${pedido.status}</span>
+      <button class="btn-icon" data-action="reabrir" data-id="${pedido.id}" title="Reabrir pedido">🔓</button>
+    `
     : `
       <select class="pedido-status-select" data-id="${pedido.id}">
         ${STATUS_OPCOES.map((s) => `<option value="${s}" ${s === pedido.status ? "selected" : ""}>${s}</option>`).join("")}
@@ -424,6 +430,67 @@ async function onMudarStatus(pedidoId, novoStatus) {
 
 async function updateDocStatus(pedidoId, novoStatus) {
   await updateDoc(doc(db, "pedidos", pedidoId), { status: novoStatus, atualizadoEm: serverTimestamp() });
+}
+
+async function reabrirPedido(pedidoId) {
+  const pedido = pedidosCache.find((p) => p.id === pedidoId);
+  if (!pedido) return;
+
+  const eraCancelado = pedido.status === "Cancelado";
+
+  const confirmado = await confirmDialog(
+    eraCancelado
+      ? `Reabrir o pedido de "${pedido.clienteNome}"? O estoque usado nele será descontado de novo.`
+      : `Reabrir o pedido de "${pedido.clienteNome}" para poder alterar o status?`,
+    { title: "Reabrir pedido", confirmLabel: "Reabrir" }
+  );
+  if (!confirmado) return;
+
+  if (eraCancelado) {
+    // Estava cancelado (estoque já tinha sido devolvido) — precisa descontar de novo.
+    const deducoes = {};
+    pedido.itens.forEach((item) => {
+      (item.receita || []).forEach((linha) => {
+        if (!deducoes[linha.ingredienteId]) {
+          deducoes[linha.ingredienteId] = { nome: linha.ingredienteNome, unidade: linha.unidade, total: 0 };
+        }
+        deducoes[linha.ingredienteId].total += linha.quantidade * item.quantidade;
+      });
+    });
+
+    const insuficientes = Object.entries(deducoes)
+      .map(([ingredienteId, info]) => {
+        const estoqueAtual = ingredientesCache.find((i) => i.id === ingredienteId);
+        if (!estoqueAtual) return null;
+        const restante = estoqueAtual.quantidade - info.total;
+        return restante < 0 ? `${info.nome} (faltam ${Math.abs(restante).toFixed(2)} ${info.unidade})` : null;
+      })
+      .filter(Boolean);
+
+    if (insuficientes.length > 0) {
+      const seguir = await confirmDialog(
+        `Estoque insuficiente para: ${insuficientes.join(", ")}. Reabrir mesmo assim?`,
+        { title: "Estoque insuficiente", confirmLabel: "Reabrir assim mesmo", danger: true }
+      );
+      if (!seguir) return;
+    }
+
+    const batch = writeBatch(db);
+    Object.entries(deducoes).forEach(([ingredienteId, info]) => {
+      batch.update(doc(db, "ingredientes", ingredienteId), {
+        quantidade: increment(-info.total),
+        atualizadoEm: serverTimestamp()
+      });
+    });
+    batch.update(doc(db, "pedidos", pedidoId), {
+      status: "Em preparo",
+      atualizadoEm: serverTimestamp()
+    });
+    await batch.commit();
+  } else {
+    // Estava "Concluído" — não mexeu no estoque na hora de concluir, então só reabre o status.
+    await updateDocStatus(pedidoId, "Em preparo");
+  }
 }
 
 /* ---------------- Ciclo de vida ---------------- */
