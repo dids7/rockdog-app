@@ -810,14 +810,16 @@ textarea:focus { border-color: var(--yellow); }
 }
 .stepper-sm .stepper-qty {
   min-width: 28px;
+  height: 34px;
   text-align: center;
   font-family: var(--font-mono);
   font-size: 14px;
+  line-height: 1;
   padding: 0 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  align-self: stretch;
+  box-sizing: border-box;
 }
 
 .pedido-resumo {
