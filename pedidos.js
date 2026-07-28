@@ -19,7 +19,8 @@ import {
 import { confirmDialog, alertDialog } from "./ui-dialog.js";
 
 const ORDEM_TIPOS = ["Lanche", "Adicional", "Bebida"];
-const STATUS_OPCOES = ["Em preparo", "Saiu para entrega", "Entregue", "Cancelado"];
+const STATUS_OPCOES = ["Em preparo", "Saiu para entrega", "Entregue", "Concluído", "Cancelado"];
+const STATUS_FINALIZADOS = ["Concluído", "Cancelado"];
 
 let unsubPedidos = null;
 let unsubCardapio = null;
@@ -235,7 +236,11 @@ function atualizarTotal() {
 
 /* ---------------- Finalizar pedido ---------------- */
 
+let finalizando = false;
+
 async function finalizarPedido() {
+  if (finalizando) return;
+
   const itensCarrinho = Object.entries(carrinho)
     .map(([itemId, qtd]) => {
       const item = cardapioCache.find((i) => i.id === itemId);
@@ -255,6 +260,10 @@ async function finalizarPedido() {
     await alertDialog("Selecione ao menos um item pelo botão + antes de finalizar.");
     return;
   }
+
+  // O total vem sempre somado a partir dos MESMOS itens que serão salvos no pedido,
+  // nunca de um recálculo separado — assim os dois números nunca podem divergir.
+  const total = itensCarrinho.reduce((acc, item) => acc + item.precoUnitario * item.quantidade, 0);
 
   // Soma quanto de cada ingrediente será descontado, cruzando receita x quantidade vendida
   const deducoes = {}; // ingredienteId -> { nome, unidade, total }
@@ -285,39 +294,48 @@ async function finalizarPedido() {
     if (!seguir) return;
   }
 
-  const total = calcularTotal();
-  const batch = writeBatch(db);
+  finalizando = true;
+  btnFinalizar.disabled = true;
+  btnFinalizar.textContent = "Finalizando...";
 
-  Object.entries(deducoes).forEach(([ingredienteId, info]) => {
-    batch.update(doc(db, "ingredientes", ingredienteId), {
-      quantidade: increment(-info.total),
+  try {
+    const batch = writeBatch(db);
+
+    Object.entries(deducoes).forEach(([ingredienteId, info]) => {
+      batch.update(doc(db, "ingredientes", ingredienteId), {
+        quantidade: increment(-info.total),
+        atualizadoEm: serverTimestamp()
+      });
+    });
+
+    const novoPedidoRef = doc(pedidosCollection());
+    batch.set(novoPedidoRef, {
+      clienteId: clienteSelecionadoId,
+      clienteNome: inputClienteNome.value.trim() || "Cliente não identificado",
+      clienteTelefone: inputClienteTelefone.value.trim(),
+      itens: itensCarrinho,
+      total,
+      status: "Em preparo",
+      negocioId: NEGOCIO_ID,
+      criadoEm: serverTimestamp(),
       atualizadoEm: serverTimestamp()
     });
-  });
 
-  const novoPedidoRef = doc(pedidosCollection());
-  batch.set(novoPedidoRef, {
-    clienteId: clienteSelecionadoId,
-    clienteNome: inputClienteNome.value.trim() || "Cliente não identificado",
-    clienteTelefone: inputClienteTelefone.value.trim(),
-    itens: itensCarrinho,
-    total,
-    status: "Em preparo",
-    negocioId: NEGOCIO_ID,
-    criadoEm: serverTimestamp(),
-    atualizadoEm: serverTimestamp()
-  });
+    if (clienteSelecionadoId) {
+      batch.update(doc(db, "clientes", clienteSelecionadoId), {
+        contadorPedidos: increment(1),
+        ultimoPedidoEm: serverTimestamp(),
+        atualizadoEm: serverTimestamp()
+      });
+    }
 
-  if (clienteSelecionadoId) {
-    batch.update(doc(db, "clientes", clienteSelecionadoId), {
-      contadorPedidos: increment(1),
-      ultimoPedidoEm: serverTimestamp(),
-      atualizadoEm: serverTimestamp()
-    });
+    await batch.commit();
+    fecharModalPedido();
+  } finally {
+    finalizando = false;
+    btnFinalizar.disabled = false;
+    btnFinalizar.textContent = "Finalizar pedido";
   }
-
-  await batch.commit();
-  fecharModalPedido();
 }
 
 /* ---------------- Histórico de pedidos ---------------- */
@@ -341,10 +359,10 @@ function renderListaPedidos() {
 
 function renderLinhaPedido(pedido) {
   const itensTexto = pedido.itens.map((i) => `${i.quantidade}x ${i.itemNome}`).join(", ");
-  const cancelado = pedido.status === "Cancelado";
+  const finalizado = STATUS_FINALIZADOS.includes(pedido.status);
 
-  const statusHtml = cancelado
-    ? `<span class="status-badge status-baixo">Cancelado</span>`
+  const statusHtml = finalizado
+    ? `<span class="status-badge ${pedido.status === "Cancelado" ? "status-baixo" : "status-ok"}">${pedido.status}</span>`
     : `
       <select class="pedido-status-select" data-id="${pedido.id}">
         ${STATUS_OPCOES.map((s) => `<option value="${s}" ${s === pedido.status ? "selected" : ""}>${s}</option>`).join("")}
