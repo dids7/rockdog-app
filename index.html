@@ -78,6 +78,10 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="2"/><path d="M2.5 20C2.5 16 5.5 14 9 14C12.5 14 15.5 16 15.5 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M15 9C16.1046 9 17 8.10457 17 7C17 5.89543 16.1046 5 15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 14.2C19 14.7 21 16.4 21 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <span>Clientes</span>
       </button>
+      <button class="nav-item" data-nav="fornecedores">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="2" y="8" width="12" height="9" rx="1" stroke="currentColor" stroke-width="2"/><path d="M14 11H18L21 14.5V17H14V11Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="6.5" cy="19" r="1.6" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="19" r="1.6" stroke="currentColor" stroke-width="1.6"/></svg>
+        <span>Fornecedores</span>
+      </button>
       <button class="nav-item" data-nav="relatorios">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 20V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M11 20V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 20V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <span>Relatórios</span>
@@ -207,6 +211,20 @@
 
         <div id="clientes-lista" class="estoque-lista">
           <p class="empty-state">Carregando clientes...</p>
+        </div>
+      </div>
+
+      <div id="view-fornecedores" class="view">
+        <div class="view-header">
+          <div>
+            <h1>Fornecedores</h1>
+            <p class="view-subtitle">Contatos e o que cada um fornece</p>
+          </div>
+          <button class="btn-primary btn-compact" id="btn-novo-fornecedor">+ Novo fornecedor</button>
+        </div>
+
+        <div id="fornecedores-lista" class="estoque-lista">
+          <p class="empty-state">Carregando fornecedores...</p>
         </div>
       </div>
 
@@ -365,6 +383,10 @@
       <button class="nav-item" data-nav="clientes">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="2"/><path d="M2.5 20C2.5 16 5.5 14 9 14C12.5 14 15.5 16 15.5 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M15 9C16.1046 9 17 8.10457 17 7C17 5.89543 16.1046 5 15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 14.2C19 14.7 21 16.4 21 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <span>Clientes</span>
+      </button>
+      <button class="nav-item" data-nav="fornecedores">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="2" y="8" width="12" height="9" rx="1" stroke="currentColor" stroke-width="2"/><path d="M14 11H18L21 14.5V17H14V11Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="6.5" cy="19" r="1.6" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="19" r="1.6" stroke="currentColor" stroke-width="1.6"/></svg>
+        <span>Fornec.</span>
       </button>
       <button class="nav-item" data-nav="relatorios">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 20V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M11 20V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 20V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -538,6 +560,38 @@
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-ghost" id="btn-cancelar-cliente">Cancelar</button>
+          <button type="submit" class="btn-primary btn-compact">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de cadastro/edição de fornecedor -->
+  <div id="modal-fornecedor" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-fornecedor-titulo">Novo fornecedor</h3>
+        <button class="btn-icon" id="btn-fechar-modal-fornecedor" type="button">✕</button>
+      </div>
+      <form id="form-fornecedor">
+        <div class="field">
+          <label for="fornecedor-nome">Nome</label>
+          <input type="text" id="fornecedor-nome" required />
+        </div>
+        <div class="field">
+          <label for="fornecedor-categoria">Categoria</label>
+          <select id="fornecedor-categoria"></select>
+        </div>
+        <div class="field">
+          <label for="fornecedor-telefone">Telefone / WhatsApp</label>
+          <input type="text" id="fornecedor-telefone" placeholder="(11) 99999-9999" />
+        </div>
+        <div class="field">
+          <label for="fornecedor-fornece">O que fornece</label>
+          <textarea id="fornecedor-fornece" rows="3" placeholder="Ex: pão de hot dog, baguete"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="btn-cancelar-fornecedor">Cancelar</button>
           <button type="submit" class="btn-primary btn-compact">Salvar</button>
         </div>
       </form>
