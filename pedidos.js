@@ -17,6 +17,7 @@ import {
   writeBatch
 } from "./firebase-config.js";
 import { confirmDialog, alertDialog } from "./ui-dialog.js";
+import { getTamanhoRecibo } from "./configuracoes.js";
 
 const ORDEM_TIPOS = ["Lanche", "Adicional", "Bebida"];
 const STATUS_OPCOES = ["Em preparo", "Saiu para entrega", "Entregue", "Concluído", "Cancelado"];
@@ -358,6 +359,9 @@ function renderListaPedidos() {
   listContainer.querySelectorAll('[data-action="reabrir"]').forEach((btn) => {
     btn.addEventListener("click", () => reabrirPedido(btn.dataset.id));
   });
+  listContainer.querySelectorAll('[data-action="imprimir"]').forEach((btn) => {
+    btn.addEventListener("click", () => imprimirPedido(btn.dataset.id));
+  });
 }
 
 function renderLinhaPedido(pedido) {
@@ -383,6 +387,7 @@ function renderLinhaPedido(pedido) {
       </div>
       <div class="pedido-linha-direita">
         <span class="preco-tag">${formatPreco(pedido.total)}</span>
+        <button class="btn-icon" data-action="imprimir" data-id="${pedido.id}" title="Imprimir pedido">🖨</button>
         ${statusHtml}
       </div>
     </div>
@@ -430,6 +435,98 @@ async function onMudarStatus(pedidoId, novoStatus) {
 
 async function updateDocStatus(pedidoId, novoStatus) {
   await updateDoc(doc(db, "pedidos", pedidoId), { status: novoStatus, atualizadoEm: serverTimestamp() });
+}
+
+/* ---------------- Impressão do recibo (58mm / 80mm) ---------------- */
+
+function imprimirPedido(pedidoId) {
+  const pedido = pedidosCache.find((p) => p.id === pedidoId);
+  if (!pedido) return;
+
+  const larguraEscolhida = getTamanhoRecibo(); // "58mm" ou "80mm"
+  const larguraMm = larguraEscolhida === "58mm" ? 58 : 80;
+  const fonteBase = larguraEscolhida === "58mm" ? "12px" : "14px";
+  const fonteTitulo = larguraEscolhida === "58mm" ? "16px" : "19px";
+
+  const itensHtml = pedido.itens
+    .map(
+      (i) => `
+        <div class="linha-item">
+          <span>${i.quantidade}x ${i.itemNome}</span>
+          <span>${formatPreco(i.precoUnitario * i.quantidade)}</span>
+        </div>
+      `
+    )
+    .join("");
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Pedido - ${pedido.clienteNome}</title>
+<style>
+  @page { size: ${larguraMm}mm auto; margin: 3mm; }
+  * { box-sizing: border-box; }
+  body {
+    width: ${larguraMm}mm;
+    font-family: "Courier New", monospace;
+    font-size: ${fonteBase};
+    color: #000;
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
+    font-size: ${fonteTitulo};
+    text-align: center;
+    margin: 0 0 6px;
+    letter-spacing: 1px;
+  }
+  p { margin: 2px 0; }
+  .centro { text-align: center; }
+  .linha-divisoria { border-top: 1px dashed #000; margin: 8px 0; }
+  .linha-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 2px 0;
+  }
+  .total {
+    font-weight: bold;
+    font-size: calc(${fonteBase} + 2px);
+    margin-top: 6px;
+  }
+  .status { margin-top: 4px; }
+</style>
+</head>
+<body>
+  <h1>ROCK DOG</h1>
+  <p class="centro">${formatHora(pedido.criadoEm)}</p>
+  <div class="linha-divisoria"></div>
+  <p><strong>Cliente:</strong> ${pedido.clienteNome}</p>
+  ${pedido.clienteTelefone ? `<p><strong>Telefone:</strong> ${pedido.clienteTelefone}</p>` : ""}
+  <div class="linha-divisoria"></div>
+  ${itensHtml}
+  <div class="linha-divisoria"></div>
+  <p class="total">Total: ${formatPreco(pedido.total)}</p>
+  <p class="status">Status: ${pedido.status}</p>
+</body>
+</html>
+  `;
+
+  const janela = window.open("", "_blank", "width=420,height=600");
+  if (!janela) {
+    alertDialog("Não foi possível abrir a janela de impressão. Verifique se o navegador bloqueou pop-ups pra este site.");
+    return;
+  }
+
+  janela.document.open();
+  janela.document.write(html);
+  janela.document.close();
+  janela.onload = () => {
+    janela.focus();
+    janela.print();
+  };
 }
 
 async function reabrirPedido(pedidoId) {

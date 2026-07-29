@@ -4,6 +4,7 @@
 // Pedidos) para uma planilha Excel (.xlsx), juntos ou separados.
 
 import { db, NEGOCIO_ID, auth, collection, getDocs, query, where } from "./firebase-config.js";
+import { getTamanhoRecibo, salvarTamanhoRecibo, onTamanhoReciboChange } from "./configuracoes.js";
 
 const emailEl = document.getElementById("perfil-email");
 const negocioEl = document.getElementById("perfil-negocio");
@@ -14,6 +15,8 @@ const checkCardapio = document.getElementById("export-cardapio");
 const checkClientes = document.getElementById("export-clientes");
 const checkPedidos = document.getElementById("export-pedidos");
 const selectPeriodoPedidos = document.getElementById("export-periodo-pedidos");
+const selectTamanhoRecibo = document.getElementById("config-tamanho-recibo");
+const btnSalvarTamanhoRecibo = document.getElementById("btn-salvar-tamanho-recibo");
 
 function colecao(nome) {
   return collection(db, nome);
@@ -221,6 +224,25 @@ export function initPerfilModule() {
     emailEl.textContent = user.email;
     negocioEl.textContent = `Negócio: ${NEGOCIO_ID}`;
   }
+
+  selectTamanhoRecibo.value = getTamanhoRecibo();
+  onTamanhoReciboChange((valor) => {
+    selectTamanhoRecibo.value = valor;
+  });
+
+  btnSalvarTamanhoRecibo.addEventListener("click", async () => {
+    btnSalvarTamanhoRecibo.disabled = true;
+    btnSalvarTamanhoRecibo.textContent = "Salvando...";
+    try {
+      await salvarTamanhoRecibo(selectTamanhoRecibo.value);
+    } finally {
+      btnSalvarTamanhoRecibo.disabled = false;
+      btnSalvarTamanhoRecibo.textContent = "Salvo!";
+      setTimeout(() => {
+        btnSalvarTamanhoRecibo.textContent = "Salvar";
+      }, 1500);
+    }
+  });
 
   btnBackup.addEventListener("click", baixarBackupCompleto);
   btnExportar.addEventListener("click", exportarExcel);

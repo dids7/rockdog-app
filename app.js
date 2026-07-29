@@ -16,6 +16,7 @@ import { initPedidosModule, stopPedidosModule } from "./pedidos.js";
 import { initClientesModule, stopClientesModule } from "./clientes.js";
 import { initRelatoriosModule, stopRelatoriosModule } from "./relatorios.js";
 import { initPerfilModule, stopPerfilModule } from "./perfil.js";
+import { initConfiguracoesModule, stopConfiguracoesModule } from "./configuracoes.js";
 
 const loadingScreen = document.getElementById("loading-screen");
 const loginScreen = document.getElementById("login-screen");
@@ -105,6 +106,7 @@ function showApp(user) {
 
   if (!estoqueIniciado) {
     estoqueIniciado = true;
+    initConfiguracoesModule();
     initEstoqueModule();
     initCardapioModule();
     initPedidosModule();
@@ -127,6 +129,7 @@ onAuthStateChanged(auth, (user) => {
       stopClientesModule();
       stopRelatoriosModule();
       stopPerfilModule();
+      stopConfiguracoesModule();
       estoqueIniciado = false;
     }
     showLogin();
