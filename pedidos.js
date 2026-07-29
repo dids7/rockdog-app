@@ -17,7 +17,7 @@ import {
   writeBatch
 } from "./firebase-config.js";
 import { confirmDialog, alertDialog } from "./ui-dialog.js";
-import { getTamanhoRecibo } from "./configuracoes.js";
+import { getTamanhoRecibo, getImpressaoAutomatica } from "./configuracoes.js";
 
 const ORDEM_TIPOS = ["Lanche", "Adicional", "Bebida"];
 const STATUS_OPCOES = ["Em preparo", "Saiu para entrega", "Entregue", "Concluído", "Cancelado"];
@@ -331,6 +331,18 @@ async function finalizarPedido() {
     }
 
     await batch.commit();
+
+    if (getImpressaoAutomatica()) {
+      construirEImprimirRecibo({
+        clienteNome: inputClienteNome.value.trim() || "Cliente não identificado",
+        clienteTelefone: inputClienteTelefone.value.trim(),
+        itens: itensCarrinho,
+        total,
+        status: "Em preparo",
+        criadoEm: { toMillis: () => Date.now() }
+      });
+    }
+
     fecharModalPedido();
   } finally {
     finalizando = false;
@@ -442,7 +454,10 @@ async function updateDocStatus(pedidoId, novoStatus) {
 function imprimirPedido(pedidoId) {
   const pedido = pedidosCache.find((p) => p.id === pedidoId);
   if (!pedido) return;
+  construirEImprimirRecibo(pedido);
+}
 
+function construirEImprimirRecibo(pedido) {
   const larguraEscolhida = getTamanhoRecibo(); // "58mm" ou "80mm"
   const larguraMm = larguraEscolhida === "58mm" ? 58 : 80;
   const fonteBase = larguraEscolhida === "58mm" ? "12px" : "14px";

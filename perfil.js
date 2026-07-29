@@ -4,7 +4,13 @@
 // Pedidos) para uma planilha Excel (.xlsx), juntos ou separados.
 
 import { db, NEGOCIO_ID, auth, collection, getDocs, query, where } from "./firebase-config.js";
-import { getTamanhoRecibo, salvarTamanhoRecibo, onTamanhoReciboChange } from "./configuracoes.js";
+import {
+  getTamanhoRecibo,
+  salvarTamanhoRecibo,
+  getImpressaoAutomatica,
+  salvarImpressaoAutomatica,
+  onConfigChange
+} from "./configuracoes.js";
 
 const emailEl = document.getElementById("perfil-email");
 const negocioEl = document.getElementById("perfil-negocio");
@@ -17,6 +23,8 @@ const checkPedidos = document.getElementById("export-pedidos");
 const selectPeriodoPedidos = document.getElementById("export-periodo-pedidos");
 const selectTamanhoRecibo = document.getElementById("config-tamanho-recibo");
 const btnSalvarTamanhoRecibo = document.getElementById("btn-salvar-tamanho-recibo");
+const toggleImpressaoAutomatica = document.getElementById("config-impressao-automatica");
+const statusImpressaoAutomatica = document.getElementById("config-impressao-automatica-status");
 
 function colecao(nome) {
   return collection(db, nome);
@@ -218,6 +226,12 @@ async function exportarExcel() {
 
 /* ---------------- Ciclo de vida ---------------- */
 
+function atualizarTextoToggle() {
+  statusImpressaoAutomatica.textContent = toggleImpressaoAutomatica.checked
+    ? "Ativado: imprime sozinho assim que o pedido é finalizado"
+    : "Desativado: imprime só quando clicar no 🖨";
+}
+
 export function initPerfilModule() {
   const user = auth.currentUser;
   if (user) {
@@ -226,8 +240,18 @@ export function initPerfilModule() {
   }
 
   selectTamanhoRecibo.value = getTamanhoRecibo();
-  onTamanhoReciboChange((valor) => {
-    selectTamanhoRecibo.value = valor;
+  toggleImpressaoAutomatica.checked = getImpressaoAutomatica();
+  atualizarTextoToggle();
+
+  onConfigChange(() => {
+    selectTamanhoRecibo.value = getTamanhoRecibo();
+    toggleImpressaoAutomatica.checked = getImpressaoAutomatica();
+    atualizarTextoToggle();
+  });
+
+  toggleImpressaoAutomatica.addEventListener("change", async () => {
+    await salvarImpressaoAutomatica(toggleImpressaoAutomatica.checked);
+    atualizarTextoToggle();
   });
 
   btnSalvarTamanhoRecibo.addEventListener("click", async () => {

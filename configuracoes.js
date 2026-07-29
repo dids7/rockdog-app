@@ -6,14 +6,15 @@
 import { db, NEGOCIO_ID, doc, onSnapshot, setDoc } from "./firebase-config.js";
 
 let tamanhoRecibo = "80mm"; // padrão até carregar o valor salvo
+let impressaoAutomatica = false; // padrão: manual
 let unsubscribe = null;
 const ouvintes = [];
 
 function notificarOuvintes() {
-  ouvintes.forEach((cb) => cb(tamanhoRecibo));
+  ouvintes.forEach((cb) => cb());
 }
 
-export function onTamanhoReciboChange(callback) {
+export function onConfigChange(callback) {
   ouvintes.push(callback);
 }
 
@@ -25,9 +26,18 @@ export function getTamanhoRecibo() {
   return tamanhoRecibo;
 }
 
+export function getImpressaoAutomatica() {
+  return impressaoAutomatica;
+}
+
 export async function salvarTamanhoRecibo(valor) {
   tamanhoRecibo = valor;
   await setDoc(configDocRef(), { tamanhoRecibo: valor, negocioId: NEGOCIO_ID }, { merge: true });
+}
+
+export async function salvarImpressaoAutomatica(valor) {
+  impressaoAutomatica = valor;
+  await setDoc(configDocRef(), { impressaoAutomatica: valor, negocioId: NEGOCIO_ID }, { merge: true });
 }
 
 export function initConfiguracoesModule() {
@@ -35,6 +45,7 @@ export function initConfiguracoesModule() {
     if (snap.exists()) {
       const dados = snap.data();
       if (dados.tamanhoRecibo) tamanhoRecibo = dados.tamanhoRecibo;
+      if (typeof dados.impressaoAutomatica === "boolean") impressaoAutomatica = dados.impressaoAutomatica;
     }
     notificarOuvintes();
   });
