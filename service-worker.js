@@ -2,7 +2,7 @@
 // Cache básico só para permitir instalação do PWA e funcionamento offline
 // da casca do app (não faz cache de dados do Firestore, esses são sempre ao vivo).
 
-const CACHE_NAME = "rockdog-shell-v27";
+const CACHE_NAME = "rockdog-shell-v28";
 const SHELL_FILES = [
   "./index.html",
   "./style.css",
@@ -44,16 +44,26 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   // Só intercepta pedidos de mesma origem (a casca do app).
-  // Chamadas ao Firebase seguem direto pra rede.
-  if (event.request.url.includes("firestore.googleapis.com") ||
-      event.request.url.includes("googleapis.com") ||
-      event.request.url.includes("gstatic.com")) {
+  // Chamadas ao Firebase e a bibliotecas externas (fontes, xlsx) seguem direto pra rede.
+  if (
+    event.request.url.includes("firestore.googleapis.com") ||
+    event.request.url.includes("googleapis.com") ||
+    event.request.url.includes("gstatic.com") ||
+    event.request.url.includes("cdnjs.cloudflare.com")
+  ) {
     return;
   }
 
+  // Network-first: sempre tenta buscar a versão mais nova da rede primeiro
+  // (e atualiza o cache com ela). Só usa o que está guardado se estiver
+  // sem internet. Isso evita ficar preso numa versão antiga em cache.
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request);
-    })
+    fetch(event.request)
+      .then((response) => {
+        const copia = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copia));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });

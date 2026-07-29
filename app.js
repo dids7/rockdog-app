@@ -79,9 +79,12 @@ document.querySelectorAll(".nav-item, .view-link").forEach((btn) => {
 // Registra o service worker (permite instalar o app / funcionar offline)
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch((err) => {
-      console.warn("Falha ao registrar service worker:", err);
-    });
+    navigator.serviceWorker
+      .register("./service-worker.js")
+      .then((registration) => registration.update())
+      .catch((err) => {
+        console.warn("Falha ao registrar service worker:", err);
+      });
   });
 }
 
