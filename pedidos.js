@@ -45,6 +45,7 @@ const itensContainer = document.getElementById("pedido-itens-cardapio");
 const totalTexto = document.getElementById("pedido-total-texto");
 const inputClienteNome = document.getElementById("pedido-cliente-nome");
 const inputClienteTelefone = document.getElementById("pedido-cliente-telefone");
+const inputObservacoes = document.getElementById("pedido-observacoes");
 const sugestoesContainer = document.getElementById("pedido-cliente-sugestoes");
 
 function ingredientesCollection() { return collection(db, "ingredientes"); }
@@ -101,6 +102,7 @@ function abrirModalPedido() {
   clienteSelecionadoId = null;
   inputClienteNome.value = "";
   inputClienteTelefone.value = "";
+  inputObservacoes.value = "";
   sugestoesContainer.classList.remove("visible");
   renderItensCarrinho();
   atualizarTotal();
@@ -157,10 +159,12 @@ function renderSugestoes(termo) {
 
 function renderItensCarrinho() {
   const porTipo = {};
-  cardapioCache.forEach((item) => {
-    if (!porTipo[item.tipo]) porTipo[item.tipo] = [];
-    porTipo[item.tipo].push(item);
-  });
+  cardapioCache
+    .filter((item) => item.ativo !== false)
+    .forEach((item) => {
+      if (!porTipo[item.tipo]) porTipo[item.tipo] = [];
+      porTipo[item.tipo].push(item);
+    });
 
   const tipos = Object.keys(porTipo).sort((a, b) => {
     const posA = ORDEM_TIPOS.indexOf(a);
@@ -314,6 +318,7 @@ async function finalizarPedido() {
       clienteId: clienteSelecionadoId,
       clienteNome: inputClienteNome.value.trim() || "Cliente não identificado",
       clienteTelefone: inputClienteTelefone.value.trim(),
+      observacoes: inputObservacoes.value.trim(),
       itens: itensCarrinho,
       total,
       status: "Em preparo",
@@ -336,6 +341,7 @@ async function finalizarPedido() {
       construirEImprimirRecibo({
         clienteNome: inputClienteNome.value.trim() || "Cliente não identificado",
         clienteTelefone: inputClienteTelefone.value.trim(),
+        observacoes: inputObservacoes.value.trim(),
         itens: itensCarrinho,
         total,
         status: "Em preparo",
@@ -396,6 +402,7 @@ function renderLinhaPedido(pedido) {
       <div class="ingrediente-info">
         <p class="ingrediente-nome">${pedido.clienteNome} <span class="pedido-hora">${formatHora(pedido.criadoEm)}</span></p>
         <p class="receita-resumo">${itensTexto}</p>
+        ${pedido.observacoes ? `<p class="pedido-observacao">📝 ${pedido.observacoes}</p>` : ""}
       </div>
       <div class="pedido-linha-direita">
         <span class="preco-tag">${formatPreco(pedido.total)}</span>
@@ -520,6 +527,7 @@ function construirEImprimirRecibo(pedido) {
   <div class="linha-divisoria"></div>
   <p><strong>Cliente:</strong> ${pedido.clienteNome}</p>
   ${pedido.clienteTelefone ? `<p><strong>Telefone:</strong> ${pedido.clienteTelefone}</p>` : ""}
+  ${pedido.observacoes ? `<div class="linha-divisoria"></div><p><strong>Obs:</strong> ${pedido.observacoes}</p>` : ""}
   <div class="linha-divisoria"></div>
   ${itensHtml}
   <div class="linha-divisoria"></div>

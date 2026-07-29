@@ -205,6 +205,7 @@ async function seedCardapioIfEmpty() {
       tipo: item.tipo,
       preco: item.preco,
       receita: receitaResolvida,
+      ativo: true,
       negocioId: NEGOCIO_ID,
       criadoEm: serverTimestamp(),
       atualizadoEm: serverTimestamp()
@@ -262,14 +263,22 @@ function renderLinha(item) {
   const receitaTexto = (item.receita || [])
     .map((r) => `${formatQuantidade(r.quantidade)} ${r.unidade} ${r.ingredienteNome}`)
     .join(" · ");
+  const ativo = item.ativo !== false;
 
   return `
     <div class="ingrediente-linha item-cardapio-linha" data-id="${item.id}">
       <div class="ingrediente-info">
-        <p class="ingrediente-nome">${item.nome} <span class="preco-tag">${formatPreco(item.preco)}</span></p>
+        <p class="ingrediente-nome">
+          ${item.nome} <span class="preco-tag">${formatPreco(item.preco)}</span>
+          ${!ativo ? '<span class="status-badge status-baixo">Esgotado</span>' : ""}
+        </p>
         <p class="receita-resumo">${receitaTexto || "Sem receita definida"}</p>
       </div>
       <div class="ingrediente-acoes">
+        <label class="toggle-switch toggle-switch-sm" title="Disponível / Esgotado">
+          <input type="checkbox" class="toggle-item-ativo" ${ativo ? "checked" : ""} />
+          <span class="toggle-slider"></span>
+        </label>
         <button class="btn-icon" data-action="editar" title="Editar">✎</button>
         <button class="btn-icon btn-icon-danger" data-action="excluir" title="Excluir">🗑</button>
       </div>
@@ -285,6 +294,12 @@ function attachRowEvents() {
 
     row.querySelector('[data-action="editar"]').addEventListener("click", () => abrirModalEdicao(item));
     row.querySelector('[data-action="excluir"]').addEventListener("click", () => excluirItem(item));
+    row.querySelector(".toggle-item-ativo").addEventListener("change", (e) => {
+      updateDoc(doc(db, "cardapio", item.id), {
+        ativo: e.target.checked,
+        atualizadoEm: serverTimestamp()
+      });
+    });
   });
 }
 
@@ -390,6 +405,7 @@ async function salvarItem(event) {
   } else {
     await addDoc(cardapioCollection(), {
       ...dados,
+      ativo: true,
       negocioId: NEGOCIO_ID,
       criadoEm: serverTimestamp(),
       atualizadoEm: serverTimestamp()
