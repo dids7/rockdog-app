@@ -970,6 +970,35 @@ textarea:focus { border-color: var(--yellow); }
   margin-bottom: 10px;
 }
 
+/* ---- Perfil / Exportação ---- */
+.export-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.export-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--white);
+  cursor: pointer;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.export-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--yellow);
+  cursor: pointer;
+}
+.export-periodo-field {
+  max-width: 240px;
+  margin-top: 14px;
+}
+
 /* ---- Contador numérico (substitui o input number nativo) ---- */
 .stepper {
   display: flex;

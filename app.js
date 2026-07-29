@@ -15,6 +15,7 @@ import { initCardapioModule, stopCardapioModule } from "./cardapio.js";
 import { initPedidosModule, stopPedidosModule } from "./pedidos.js";
 import { initClientesModule, stopClientesModule } from "./clientes.js";
 import { initRelatoriosModule, stopRelatoriosModule } from "./relatorios.js";
+import { initPerfilModule, stopPerfilModule } from "./perfil.js";
 
 const loadingScreen = document.getElementById("loading-screen");
 const loginScreen = document.getElementById("login-screen");
@@ -36,7 +37,7 @@ function showToast(message) {
   toastTimeout = setTimeout(() => toast.classList.remove("visible"), 2200);
 }
 
-const AVAILABLE_VIEWS = ["painel", "estoque", "cardapio", "pedidos", "clientes", "relatorios"];
+const AVAILABLE_VIEWS = ["painel", "estoque", "cardapio", "pedidos", "clientes", "relatorios", "perfil"];
 
 const NAV_LABELS = {
   painel: "Painel",
@@ -44,7 +45,8 @@ const NAV_LABELS = {
   cardapio: "Cardápio",
   pedidos: "Pedidos",
   clientes: "Clientes",
-  relatorios: "Relatórios"
+  relatorios: "Relatórios",
+  perfil: "Perfil"
 };
 
 function switchView(target) {
@@ -108,6 +110,7 @@ function showApp(user) {
     initPedidosModule();
     initClientesModule();
     initRelatoriosModule();
+    initPerfilModule();
   }
 }
 
@@ -123,6 +126,7 @@ onAuthStateChanged(auth, (user) => {
       stopPedidosModule();
       stopClientesModule();
       stopRelatoriosModule();
+      stopPerfilModule();
       estoqueIniciado = false;
     }
     showLogin();

@@ -15,6 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="style.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -80,6 +81,10 @@
       <button class="nav-item" data-nav="relatorios">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 20V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M11 20V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 20V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <span>Relatórios</span>
+      </button>
+      <button class="nav-item" data-nav="perfil">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <span>Perfil</span>
       </button>
     </nav>
     <button class="btn-ghost sidebar-logout" id="logout-btn-desktop">Sair</button>
@@ -251,6 +256,55 @@
           </div>
         </div>
       </div>
+
+      <div id="view-perfil" class="view">
+        <div class="view-header">
+          <div>
+            <h1>Perfil</h1>
+            <p class="view-subtitle">Conta, backup e exportação de dados</p>
+          </div>
+        </div>
+
+        <div class="relatorio-secao">
+          <h4 class="categoria-titulo">Conta</h4>
+          <div class="ingrediente-linha">
+            <div class="ingrediente-info">
+              <p class="ingrediente-nome" id="perfil-email">—</p>
+              <p class="receita-resumo" id="perfil-negocio">—</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="relatorio-secao">
+          <h4 class="categoria-titulo">Backup completo</h4>
+          <p class="view-subtitle" style="margin-bottom:12px;">Baixa um arquivo com todos os dados do negócio (estoque, cardápio, clientes e pedidos), pra guardar como cópia de segurança.</p>
+          <button class="btn-primary btn-compact" id="btn-backup-json">Baixar backup (.json)</button>
+        </div>
+
+        <div class="relatorio-secao">
+          <h4 class="categoria-titulo">Exportar para Excel</h4>
+          <p class="view-subtitle" style="margin-bottom:12px;">Escolha o que exportar — pode ser só um tipo de dado ou vários juntos, cada um em uma aba da planilha.</p>
+
+          <div class="export-opcoes">
+            <label class="export-checkbox"><input type="checkbox" id="export-estoque" checked /> Estoque</label>
+            <label class="export-checkbox"><input type="checkbox" id="export-cardapio" checked /> Cardápio</label>
+            <label class="export-checkbox"><input type="checkbox" id="export-clientes" checked /> Clientes</label>
+            <label class="export-checkbox"><input type="checkbox" id="export-pedidos" checked /> Pedidos</label>
+          </div>
+
+          <div class="field export-periodo-field">
+            <label for="export-periodo-pedidos">Período dos pedidos (se marcado acima)</label>
+            <select id="export-periodo-pedidos">
+              <option value="hoje">Hoje</option>
+              <option value="7dias">Últimos 7 dias</option>
+              <option value="mes" selected>Este mês</option>
+              <option value="tudo">Tudo</option>
+            </select>
+          </div>
+
+          <button class="btn-primary btn-compact" id="btn-exportar-excel" style="margin-top:14px;">Exportar selecionados (.xlsx)</button>
+        </div>
+      </div>
     </div>
 
     <!-- Bottom nav: visível só em telas estreitas (celular) -->
@@ -278,6 +332,10 @@
       <button class="nav-item" data-nav="relatorios">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 20V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M11 20V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 20V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <span>Relatórios</span>
+      </button>
+      <button class="nav-item" data-nav="perfil">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <span>Perfil</span>
       </button>
     </nav>
   </div>
