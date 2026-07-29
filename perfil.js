@@ -263,7 +263,7 @@ export function initPerfilModule() {
       btnSalvarTamanhoRecibo.disabled = false;
       btnSalvarTamanhoRecibo.textContent = "Salvo!";
       setTimeout(() => {
-        btnSalvarTamanhoRecibo.textContent = "Salvar";
+        btnSalvarTamanhoRecibo.textContent = "Salvar tamanho do papel";
       }, 1500);
     }
   });

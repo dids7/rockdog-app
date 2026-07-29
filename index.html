@@ -277,25 +277,32 @@
 
         <div class="relatorio-secao">
           <h4 class="categoria-titulo">Impressão de pedidos</h4>
-          <p class="view-subtitle" style="margin-bottom:12px;">Escolha o tamanho do rolo de papel da impressora térmica da cozinha.</p>
-          <div class="field export-periodo-field">
-            <label for="config-tamanho-recibo">Tamanho do papel</label>
-            <select id="config-tamanho-recibo">
-              <option value="58mm">58mm</option>
-              <option value="80mm">80mm</option>
-            </select>
-          </div>
-          <button class="btn-primary btn-compact" id="btn-salvar-tamanho-recibo" style="margin-top:14px;">Salvar</button>
+          <p class="view-subtitle" style="margin-bottom:12px;">Tamanho do papel e modo de impressão do recibo.</p>
 
-          <div class="toggle-row">
-            <label class="toggle-switch">
-              <input type="checkbox" id="config-impressao-automatica" />
-              <span class="toggle-slider"></span>
-            </label>
-            <div>
-              <p class="ingrediente-nome" style="margin:0;">Impressão automática</p>
-              <p class="receita-resumo" id="config-impressao-automatica-status">Desativado: imprime só quando clicar no 🖨</p>
+          <div class="config-card">
+            <div class="config-linha">
+              <div>
+                <p class="config-linha-titulo">Tamanho do papel</p>
+                <p class="config-linha-sub">Rolo da impressora térmica da cozinha</p>
+              </div>
+              <select id="config-tamanho-recibo" class="config-select-inline">
+                <option value="58mm">58mm</option>
+                <option value="80mm">80mm</option>
+              </select>
             </div>
+
+            <div class="config-linha">
+              <div>
+                <p class="config-linha-titulo">Impressão automática</p>
+                <p class="config-linha-sub" id="config-impressao-automatica-status">Desativado: imprime só quando clicar no 🖨</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="config-impressao-automatica" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <button class="btn-primary btn-compact" id="btn-salvar-tamanho-recibo">Salvar tamanho do papel</button>
           </div>
         </div>
 
