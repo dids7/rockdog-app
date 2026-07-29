@@ -47,6 +47,7 @@ const itensContainer = document.getElementById("pedido-itens-cardapio");
 const totalTexto = document.getElementById("pedido-total-texto");
 const inputClienteNome = document.getElementById("pedido-cliente-nome");
 const inputClienteTelefone = document.getElementById("pedido-cliente-telefone");
+const inputClienteEndereco = document.getElementById("pedido-cliente-endereco");
 const inputObservacoes = document.getElementById("pedido-observacoes");
 const sugestoesContainer = document.getElementById("pedido-cliente-sugestoes");
 
@@ -105,6 +106,7 @@ function abrirModalPedido() {
   editandoPedidoId = null;
   inputClienteNome.value = "";
   inputClienteTelefone.value = "";
+  inputClienteEndereco.value = "";
   inputObservacoes.value = "";
   sugestoesContainer.classList.remove("visible");
   modalTitulo.textContent = "Novo pedido";
@@ -123,6 +125,7 @@ function abrirModalEdicaoPedido(pedido) {
   editandoPedidoId = pedido.id;
   inputClienteNome.value = pedido.clienteNome === "Cliente não identificado" ? "" : pedido.clienteNome;
   inputClienteTelefone.value = pedido.clienteTelefone || "";
+  inputClienteEndereco.value = pedido.clienteEndereco || "";
   inputObservacoes.value = pedido.observacoes || "";
   sugestoesContainer.classList.remove("visible");
   modalTitulo.textContent = "Editar pedido";
@@ -175,6 +178,7 @@ function renderSugestoes(termo) {
       clienteSelecionadoId = cliente.id;
       inputClienteNome.value = cliente.nome;
       inputClienteTelefone.value = cliente.telefone || "";
+      inputClienteEndereco.value = cliente.endereco || "";
       sugestoesContainer.classList.remove("visible");
       sugestoesContainer.innerHTML = "";
     });
@@ -350,6 +354,7 @@ async function criarPedido() {
       clienteId: clienteSelecionadoId,
       clienteNome: inputClienteNome.value.trim() || "Cliente não identificado",
       clienteTelefone: inputClienteTelefone.value.trim(),
+      clienteEndereco: inputClienteEndereco.value.trim(),
       observacoes: inputObservacoes.value.trim(),
       itens: itensCarrinho,
       total,
@@ -373,6 +378,7 @@ async function criarPedido() {
       construirEImprimirRecibo({
         clienteNome: inputClienteNome.value.trim() || "Cliente não identificado",
         clienteTelefone: inputClienteTelefone.value.trim(),
+        clienteEndereco: inputClienteEndereco.value.trim(),
         observacoes: inputObservacoes.value.trim(),
         itens: itensCarrinho,
         total,
@@ -480,6 +486,7 @@ async function salvarEdicaoPedido() {
       clienteId: clienteSelecionadoId,
       clienteNome: inputClienteNome.value.trim() || "Cliente não identificado",
       clienteTelefone: inputClienteTelefone.value.trim(),
+      clienteEndereco: inputClienteEndereco.value.trim(),
       observacoes: inputObservacoes.value.trim(),
       itens: itensCarrinho,
       total,
@@ -690,6 +697,7 @@ function construirEImprimirRecibo(pedido) {
   <div class="linha-divisoria"></div>
   <p><strong>Cliente:</strong> ${pedido.clienteNome}</p>
   ${pedido.clienteTelefone ? `<p><strong>Telefone:</strong> ${pedido.clienteTelefone}</p>` : ""}
+  ${pedido.clienteEndereco ? `<p><strong>Endereço:</strong> ${pedido.clienteEndereco}</p>` : ""}
   ${pedido.observacoes ? `<div class="linha-divisoria"></div><p><strong>Obs:</strong> ${pedido.observacoes}</p>` : ""}
   <div class="linha-divisoria"></div>
   ${itensHtml}

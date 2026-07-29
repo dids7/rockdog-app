@@ -18,7 +18,7 @@ import {
   getDocs,
   writeBatch
 } from "./firebase-config.js";
-import { confirmDialog, promptDialog, alertDialog } from "./ui-dialog.js";
+import { confirmDialog, alertDialog } from "./ui-dialog.js";
 
 const CATEGORIAS = ["Pães", "Carnes", "Guarnições", "Molhos", "Bebidas", "Embalagens", "Outros"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade", "pacote", "caixa"];
@@ -199,27 +199,11 @@ function attachRowEvents() {
 
 async function ajustarQuantidade(item, direcao) {
   const passo = ["kg", "L"].includes(item.unidade) ? 0.1 : 1;
-  const valorTexto = await promptDialog(
-    `${direcao === "mais" ? "Adicionar" : "Retirar"} quantas ${item.unidade} de "${item.nome}"?`,
-    {
-      title: direcao === "mais" ? "Adicionar ao estoque" : "Retirar do estoque",
-      defaultValue: "1",
-      inputType: "number",
-      step: passo,
-      confirmLabel: "Confirmar"
-    }
-  );
-  if (valorTexto === null) return;
-  const valor = parseFloat(String(valorTexto).replace(",", "."));
-  if (isNaN(valor) || valor <= 0) {
-    await alertDialog("Digite um número válido maior que zero.");
-    return;
-  }
-
-  const delta = direcao === "mais" ? valor : -valor;
+  const delta = direcao === "mais" ? passo : -passo;
   const novaQuantidade = item.quantidade + delta;
+
   if (novaQuantidade < 0) {
-    await alertDialog("Isso deixaria o estoque negativo. Confere a quantidade.");
+    await alertDialog("Isso deixaria o estoque negativo.");
     return;
   }
 
