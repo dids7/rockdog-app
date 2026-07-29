@@ -33,11 +33,13 @@ let pedidosCache = [];
 let clientesCache = [];
 let carrinho = {}; // { itemId: quantidade }
 let clienteSelecionadoId = null;
+let editandoPedidoId = null;
 
 // Elementos da tela
 const listContainer = document.getElementById("pedidos-lista");
 const btnNovo = document.getElementById("btn-novo-pedido");
 const modal = document.getElementById("modal-pedido");
+const modalTitulo = document.getElementById("modal-pedido-titulo");
 const btnFecharModal = document.getElementById("btn-fechar-modal-pedido");
 const btnCancelarModal = document.getElementById("btn-cancelar-pedido");
 const btnFinalizar = document.getElementById("btn-finalizar-pedido");
@@ -100,10 +102,31 @@ function watchClientes() {
 function abrirModalPedido() {
   carrinho = {};
   clienteSelecionadoId = null;
+  editandoPedidoId = null;
   inputClienteNome.value = "";
   inputClienteTelefone.value = "";
   inputObservacoes.value = "";
   sugestoesContainer.classList.remove("visible");
+  modalTitulo.textContent = "Novo pedido";
+  btnFinalizar.textContent = "Finalizar pedido";
+  renderItensCarrinho();
+  atualizarTotal();
+  modal.classList.add("visible");
+}
+
+function abrirModalEdicaoPedido(pedido) {
+  carrinho = {};
+  (pedido.itens || []).forEach((item) => {
+    carrinho[item.itemId] = item.quantidade;
+  });
+  clienteSelecionadoId = pedido.clienteId || null;
+  editandoPedidoId = pedido.id;
+  inputClienteNome.value = pedido.clienteNome === "Cliente não identificado" ? "" : pedido.clienteNome;
+  inputClienteTelefone.value = pedido.clienteTelefone || "";
+  inputObservacoes.value = pedido.observacoes || "";
+  sugestoesContainer.classList.remove("visible");
+  modalTitulo.textContent = "Editar pedido";
+  btnFinalizar.textContent = "Salvar alterações";
   renderItensCarrinho();
   atualizarTotal();
   modal.classList.add("visible");
@@ -113,6 +136,7 @@ function fecharModalPedido() {
   modal.classList.remove("visible");
   carrinho = {};
   clienteSelecionadoId = null;
+  editandoPedidoId = null;
 }
 
 function renderSugestoes(termo) {
@@ -243,7 +267,15 @@ function atualizarTotal() {
 
 let finalizando = false;
 
-async function finalizarPedido() {
+async function aoClicarFinalizar() {
+  if (editandoPedidoId) {
+    await salvarEdicaoPedido();
+  } else {
+    await criarPedido();
+  }
+}
+
+async function criarPedido() {
   if (finalizando) return;
 
   const itensCarrinho = Object.entries(carrinho)
@@ -357,6 +389,130 @@ async function finalizarPedido() {
   }
 }
 
+async function salvarEdicaoPedido() {
+  if (finalizando) return;
+
+  const pedidoOriginal = pedidosCache.find((p) => p.id === editandoPedidoId);
+  if (!pedidoOriginal) {
+    await alertDialog("Não encontrei esse pedido — pode ter sido removido.");
+    return;
+  }
+
+  const itensCarrinho = Object.entries(carrinho)
+    .map(([itemId, qtd]) => {
+      const item = cardapioCache.find((i) => i.id === itemId);
+      if (!item || qtd <= 0) return null;
+      return {
+        itemId: item.id,
+        itemNome: item.nome,
+        tipo: item.tipo,
+        precoUnitario: item.preco,
+        quantidade: qtd,
+        receita: item.receita || []
+      };
+    })
+    .filter(Boolean);
+
+  if (itensCarrinho.length === 0) {
+    await alertDialog("Selecione ao menos um item pelo botão + antes de salvar.");
+    return;
+  }
+
+  const total = itensCarrinho.reduce((acc, item) => acc + item.precoUnitario * item.quantidade, 0);
+
+  // Quanto o pedido NOVO vai consumir de cada ingrediente
+  const deducoesNovas = {};
+  itensCarrinho.forEach((item) => {
+    item.receita.forEach((linha) => {
+      deducoesNovas[linha.ingredienteId] = (deducoesNovas[linha.ingredienteId] || 0) + linha.quantidade * item.quantidade;
+    });
+  });
+
+  // Quanto o pedido ANTIGO já tinha consumido (baseado no que foi salvo na hora)
+  const deducoesAntigas = {};
+  (pedidoOriginal.itens || []).forEach((item) => {
+    (item.receita || []).forEach((linha) => {
+      deducoesAntigas[linha.ingredienteId] = (deducoesAntigas[linha.ingredienteId] || 0) + linha.quantidade * item.quantidade;
+    });
+  });
+
+  // A diferença é o que precisa ajustar no estoque (positivo = descontar mais, negativo = devolver)
+  const idsIngredientes = new Set([...Object.keys(deducoesAntigas), ...Object.keys(deducoesNovas)]);
+  const deltas = {};
+  idsIngredientes.forEach((id) => {
+    const delta = (deducoesNovas[id] || 0) - (deducoesAntigas[id] || 0);
+    if (delta !== 0) deltas[id] = delta;
+  });
+
+  const insuficientes = Object.entries(deltas)
+    .map(([ingredienteId, delta]) => {
+      if (delta <= 0) return null;
+      const estoqueAtual = ingredientesCache.find((i) => i.id === ingredienteId);
+      if (!estoqueAtual) return null;
+      const restante = estoqueAtual.quantidade - delta;
+      return restante < 0 ? `${estoqueAtual.nome} (faltam ${Math.abs(restante).toFixed(2)} ${estoqueAtual.unidade})` : null;
+    })
+    .filter(Boolean);
+
+  if (insuficientes.length > 0) {
+    const seguir = await confirmDialog(
+      `Estoque insuficiente para: ${insuficientes.join(", ")}. Salvar mesmo assim?`,
+      { title: "Estoque insuficiente", confirmLabel: "Salvar assim mesmo", danger: true }
+    );
+    if (!seguir) return;
+  }
+
+  finalizando = true;
+  btnFinalizar.disabled = true;
+  btnFinalizar.textContent = "Salvando...";
+
+  try {
+    const batch = writeBatch(db);
+
+    Object.entries(deltas).forEach(([ingredienteId, delta]) => {
+      batch.update(doc(db, "ingredientes", ingredienteId), {
+        quantidade: increment(-delta),
+        atualizadoEm: serverTimestamp()
+      });
+    });
+
+    batch.update(doc(db, "pedidos", editandoPedidoId), {
+      clienteId: clienteSelecionadoId,
+      clienteNome: inputClienteNome.value.trim() || "Cliente não identificado",
+      clienteTelefone: inputClienteTelefone.value.trim(),
+      observacoes: inputObservacoes.value.trim(),
+      itens: itensCarrinho,
+      total,
+      atualizadoEm: serverTimestamp()
+    });
+
+    // Se o cliente vinculado mudou, ajusta o contador de pedidos de cada um
+    const clienteAntigoId = pedidoOriginal.clienteId || null;
+    if (clienteAntigoId !== clienteSelecionadoId) {
+      if (clienteAntigoId) {
+        batch.update(doc(db, "clientes", clienteAntigoId), {
+          contadorPedidos: increment(-1),
+          atualizadoEm: serverTimestamp()
+        });
+      }
+      if (clienteSelecionadoId) {
+        batch.update(doc(db, "clientes", clienteSelecionadoId), {
+          contadorPedidos: increment(1),
+          ultimoPedidoEm: serverTimestamp(),
+          atualizadoEm: serverTimestamp()
+        });
+      }
+    }
+
+    await batch.commit();
+    fecharModalPedido();
+  } finally {
+    finalizando = false;
+    btnFinalizar.disabled = false;
+    btnFinalizar.textContent = editandoPedidoId ? "Salvar alterações" : "Finalizar pedido";
+  }
+}
+
 /* ---------------- Histórico de pedidos ---------------- */
 
 function renderListaPedidos() {
@@ -380,6 +536,12 @@ function renderListaPedidos() {
   listContainer.querySelectorAll('[data-action="imprimir"]').forEach((btn) => {
     btn.addEventListener("click", () => imprimirPedido(btn.dataset.id));
   });
+  listContainer.querySelectorAll('[data-action="editar-pedido"]').forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const pedido = pedidosCache.find((p) => p.id === btn.dataset.id);
+      if (pedido) abrirModalEdicaoPedido(pedido);
+    });
+  });
 }
 
 function renderLinhaPedido(pedido) {
@@ -392,6 +554,7 @@ function renderLinhaPedido(pedido) {
       <button class="btn-icon" data-action="reabrir" data-id="${pedido.id}" title="Reabrir pedido">🔓</button>
     `
     : `
+      <button class="btn-icon" data-action="editar-pedido" data-id="${pedido.id}" title="Editar pedido">✎</button>
       <select class="pedido-status-select" data-id="${pedido.id}">
         ${STATUS_OPCOES.map((s) => `<option value="${s}" ${s === pedido.status ? "selected" : ""}>${s}</option>`).join("")}
       </select>
@@ -629,7 +792,7 @@ export function initPedidosModule() {
   btnNovo.addEventListener("click", abrirModalPedido);
   btnFecharModal.addEventListener("click", fecharModalPedido);
   btnCancelarModal.addEventListener("click", fecharModalPedido);
-  btnFinalizar.addEventListener("click", finalizarPedido);
+  btnFinalizar.addEventListener("click", aoClicarFinalizar);
 
   inputClienteNome.addEventListener("input", () => {
     clienteSelecionadoId = null;
