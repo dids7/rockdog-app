@@ -17,6 +17,7 @@ import { initClientesModule, stopClientesModule } from "./clientes.js";
 import { initRelatoriosModule, stopRelatoriosModule } from "./relatorios.js";
 import { initPerfilModule, stopPerfilModule } from "./perfil.js";
 import { initConfiguracoesModule, stopConfiguracoesModule } from "./configuracoes.js";
+import { initPainelModule, stopPainelModule } from "./painel.js";
 
 const loadingScreen = document.getElementById("loading-screen");
 const loginScreen = document.getElementById("login-screen");
@@ -61,9 +62,9 @@ function switchView(target) {
   window.scrollTo(0, 0);
 }
 
-// Navegação (sidebar + bottom nav + cards do painel). Painel e Estoque têm
-// conteúdo real; os outros módulos avisam que ainda estão em construção.
-document.querySelectorAll(".nav-item, .module-card").forEach((btn) => {
+// Navegação (sidebar + bottom nav + atalhos do painel). Todas as abas já têm
+// conteúdo real.
+document.querySelectorAll(".nav-item, .view-link").forEach((btn) => {
   btn.addEventListener("click", () => {
     const target = btn.dataset.nav;
 
@@ -107,6 +108,7 @@ function showApp(user) {
   if (!estoqueIniciado) {
     estoqueIniciado = true;
     initConfiguracoesModule();
+    initPainelModule();
     initEstoqueModule();
     initCardapioModule();
     initPedidosModule();
@@ -123,6 +125,7 @@ onAuthStateChanged(auth, (user) => {
     showApp(user);
   } else {
     if (estoqueIniciado) {
+      stopPainelModule();
       stopEstoqueModule();
       stopCardapioModule();
       stopPedidosModule();

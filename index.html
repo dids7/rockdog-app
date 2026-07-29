@@ -105,42 +105,48 @@
           <p id="user-email-display">Painel de controle do Rock Dog</p>
         </div>
 
-        <div class="module-grid">
-          <button class="module-card" data-nav="estoque" type="button">
-            <div class="card-header">
-              <span class="tag">Estoque</span>
+        <div class="stat-grid" id="painel-stats-hoje"></div>
+
+        <div class="relatorio-secao">
+          <div class="view-header painel-secao-header">
+            <div><h4 class="categoria-titulo">Estoque</h4></div>
+            <button class="btn-ghost btn-compact view-link" data-nav="estoque" type="button">Ver estoque</button>
+          </div>
+          <div id="painel-alerta-estoque" class="alerta-banner">
+            <span id="painel-alerta-estoque-texto"></span>
+          </div>
+          <div id="painel-estoque-criticos" class="ingrediente-lista">
+            <p class="empty-state">Carregando...</p>
+          </div>
+        </div>
+
+        <div class="relatorio-secao">
+          <h4 class="categoria-titulo">Vendas nos últimos 7 dias</h4>
+          <div id="painel-grafico-7dias" class="grafico-barras"></div>
+        </div>
+
+        <div class="painel-grid-dois">
+          <div class="relatorio-secao">
+            <h4 class="categoria-titulo">Mais vendido (7 dias)</h4>
+            <div id="painel-mais-vendido">
+              <p class="empty-state">Sem dados ainda.</p>
             </div>
-            <h3>Ingredientes</h3>
-            <p>Controle de quantidade e avisos de reposição.</p>
-          </button>
-          <button class="module-card" data-nav="cardapio" type="button">
-            <div class="card-header">
-              <span class="tag">Cardápio</span>
+          </div>
+
+          <div class="relatorio-secao">
+            <div class="view-header painel-secao-header">
+              <div><h4 class="categoria-titulo">Últimos pedidos</h4></div>
+              <button class="btn-ghost btn-compact view-link" data-nav="pedidos" type="button">Ver todos</button>
             </div>
-            <h3>Lanches</h3>
-            <p>Itens vendidos, preços e receitas de cada um.</p>
-          </button>
-          <button class="module-card" data-nav="pedidos" type="button">
-            <div class="card-header">
-              <span class="tag">Vendas</span>
+            <div id="painel-ultimos-pedidos" class="ingrediente-lista">
+              <p class="empty-state">Sem pedidos ainda.</p>
             </div>
-            <h3>Pedidos</h3>
-            <p>Registro de pedidos e baixa automática do estoque.</p>
-          </button>
-          <button class="module-card" data-nav="clientes" type="button">
-            <div class="card-header">
-              <span class="tag">Base</span>
-            </div>
-            <h3>Clientes</h3>
-            <p>Cadastro e histórico de quem já pediu.</p>
-          </button>
-          <button class="module-card" data-nav="relatorios" type="button">
-            <div class="card-header">
-              <span class="tag">Análise</span>
-            </div>
-            <h3>Relatórios</h3>
-            <p>Vendas, consumo de ingredientes e mais.</p>
-          </button>
+          </div>
+        </div>
+
+        <div class="relatorio-secao">
+          <h4 class="categoria-titulo">Média histórica de fim de semana</h4>
+          <div class="stat-grid" id="painel-media-fds"></div>
         </div>
       </div>
 
