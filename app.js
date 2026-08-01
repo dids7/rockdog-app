@@ -27,7 +27,6 @@ const loginForm = document.getElementById("login-form");
 const loginBtn = document.getElementById("login-btn");
 const loginError = document.getElementById("login-error");
 const logoutBtn = document.getElementById("logout-btn");
-const logoutBtnDesktop = document.getElementById("logout-btn-desktop");
 const userEmailDisplay = document.getElementById("user-email-display");
 const pageTitle = document.querySelector(".page-title");
 const toast = document.getElementById("toast");
@@ -168,9 +167,6 @@ loginForm.addEventListener("submit", async (event) => {
 });
 
 logoutBtn.addEventListener("click", async () => {
-  await signOut(auth);
-});
-logoutBtnDesktop.addEventListener("click", async () => {
   await signOut(auth);
 });
 
