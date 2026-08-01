@@ -522,13 +522,29 @@ async function salvarEdicaoPedido() {
 
 /* ---------------- Histórico de pedidos ---------------- */
 
+let filtroData = null; // "YYYY-MM-DD" ou null pra mostrar todos
+
+function chaveDia(millis) {
+  const d = new Date(millis);
+  return d.toISOString().slice(0, 10);
+}
+
 function renderListaPedidos() {
   if (pedidosCache.length === 0) {
     listContainer.innerHTML = `<p class="empty-state">Nenhum pedido registrado ainda.</p>`;
     return;
   }
 
-  const ordenados = pedidosCache
+  const filtrados = filtroData
+    ? pedidosCache.filter((p) => chaveDia(timestampMillis(p.criadoEm)) === filtroData)
+    : pedidosCache;
+
+  if (filtrados.length === 0) {
+    listContainer.innerHTML = `<p class="empty-state">Nenhum pedido nesse dia.</p>`;
+    return;
+  }
+
+  const ordenados = filtrados
     .slice()
     .sort((a, b) => timestampMillis(b.criadoEm) - timestampMillis(a.criadoEm));
 
@@ -802,6 +818,18 @@ export function initPedidosModule() {
   btnCancelarModal.addEventListener("click", fecharModalPedido);
   btnFinalizar.addEventListener("click", aoClicarFinalizar);
 
+  const inputFiltroData = document.getElementById("pedidos-filtro-data");
+  const btnLimparFiltroData = document.getElementById("btn-limpar-filtro-data");
+  inputFiltroData.addEventListener("change", () => {
+    filtroData = inputFiltroData.value || null;
+    renderListaPedidos();
+  });
+  btnLimparFiltroData.addEventListener("click", () => {
+    filtroData = null;
+    inputFiltroData.value = "";
+    renderListaPedidos();
+  });
+
   inputClienteNome.addEventListener("input", () => {
     clienteSelecionadoId = null;
     renderSugestoes(inputClienteNome.value);
@@ -824,4 +852,5 @@ export function stopPedidosModule() {
   pedidosCache = [];
   clientesCache = [];
   carrinho = {};
+  filtroData = null;
 }

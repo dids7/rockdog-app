@@ -872,6 +872,19 @@ textarea:focus { border-color: var(--yellow); }
   font-size: 12px;
 }
 
+/* ---- Filtro de data (Pedidos) ---- */
+.pedidos-filtro {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.pedidos-filtro-data-field {
+  max-width: 200px;
+  margin-bottom: 0;
+}
+
 /* ---- Autocomplete de cliente (no pedido) ---- */
 .autocomplete-wrap {
   position: relative;
