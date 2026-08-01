@@ -9,6 +9,7 @@ import {
   collection,
   doc,
   updateDoc,
+  deleteDoc,
   onSnapshot,
   query,
   where,
@@ -565,6 +566,22 @@ function renderListaPedidos() {
       if (pedido) abrirModalEdicaoPedido(pedido);
     });
   });
+  listContainer.querySelectorAll('[data-action="excluir-pedido"]').forEach((btn) => {
+    btn.addEventListener("click", () => excluirPedidoDaLista(btn.dataset.id));
+  });
+}
+
+async function excluirPedidoDaLista(pedidoId) {
+  const pedido = pedidosCache.find((p) => p.id === pedidoId);
+  if (!pedido) return;
+
+  const confirmado = await confirmDialog(
+    `Excluir o pedido de "${pedido.clienteNome}" da lista? Essa ação não pode ser desfeita e não mexe no estoque.`,
+    { title: "Excluir pedido", confirmLabel: "Excluir", danger: true }
+  );
+  if (!confirmado) return;
+
+  await deleteDoc(doc(db, "pedidos", pedidoId));
 }
 
 function renderLinhaPedido(pedido) {
@@ -594,6 +611,7 @@ function renderLinhaPedido(pedido) {
         <span class="preco-tag">${formatPreco(pedido.total)}</span>
         <button class="btn-icon" data-action="imprimir" data-id="${pedido.id}" title="Imprimir pedido">🖨</button>
         ${statusHtml}
+        <button class="btn-icon btn-icon-danger" data-action="excluir-pedido" data-id="${pedido.id}" title="Excluir da lista">🗑</button>
       </div>
     </div>
   `;
