@@ -124,6 +124,10 @@ a { color: var(--yellow); }
   border-color: var(--yellow);
 }
 
+input[type="date"] {
+  color-scheme: dark;
+}
+
 .btn-primary {
   width: 100%;
   background: var(--yellow);
