@@ -11,6 +11,7 @@ const overlay = document.getElementById("dialog-overlay");
 const titleEl = document.getElementById("dialog-title");
 const messageEl = document.getElementById("dialog-message");
 const inputWrap = document.getElementById("dialog-input-wrap");
+const stepperWrap = document.getElementById("dialog-stepper");
 const inputEl = document.getElementById("dialog-input");
 const decrementBtn = document.getElementById("dialog-decrement");
 const incrementBtn = document.getElementById("dialog-increment");
@@ -44,6 +45,8 @@ function openDialog({
     inputWrap.hidden = !showInput;
     if (showInput) {
       inputEl.value = inputValue;
+      inputEl.type = inputType === "number" ? "text" : inputType;
+      stepperWrap.classList.toggle("stepper--plain", inputType !== "number");
     }
 
     cancelBtn.style.display = showCancel ? "inline-block" : "none";

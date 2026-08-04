@@ -7,6 +7,7 @@ import {
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
@@ -48,7 +49,7 @@ export const db = getFirestore(app);
 // desde o início, então a migração não vai exigir redesenhar o banco.
 export const NEGOCIO_ID = "rockdog";
 
-export { onAuthStateChanged, signInWithEmailAndPassword, signOut };
+export { onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut };
 export {
   collection,
   doc,

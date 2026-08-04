@@ -7,9 +7,11 @@ import {
   auth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   signOut,
   NEGOCIO_ID
 } from "./firebase-config.js";
+import { promptDialog, alertDialog } from "./ui-dialog.js";
 import { initEstoqueModule, stopEstoqueModule } from "./estoque.js";
 import { initCardapioModule, stopCardapioModule } from "./cardapio.js";
 import { initPedidosModule, stopPedidosModule } from "./pedidos.js";
@@ -27,6 +29,7 @@ const loginForm = document.getElementById("login-form");
 const loginBtn = document.getElementById("login-btn");
 const loginError = document.getElementById("login-error");
 const logoutBtn = document.getElementById("logout-btn");
+const btnEsqueciSenha = document.getElementById("btn-esqueci-senha");
 const userEmailDisplay = document.getElementById("user-email-display");
 const pageTitle = document.querySelector(".page-title");
 const toast = document.getElementById("toast");
@@ -168,6 +171,25 @@ loginForm.addEventListener("submit", async (event) => {
 
 logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
+});
+
+btnEsqueciSenha.addEventListener("click", async () => {
+  const emailAtual = document.getElementById("email").value.trim();
+  const email = await promptDialog(
+    "Digite o e-mail da sua conta pra receber o link de redefinição de senha:",
+    { title: "Esqueci minha senha", defaultValue: emailAtual, inputType: "email", confirmLabel: "Enviar" }
+  );
+  if (!email) return;
+
+  try {
+    await sendPasswordResetEmail(auth, email.trim());
+    await alertDialog(
+      `Se ${email.trim()} estiver cadastrado, um e-mail com o link pra criar uma nova senha foi enviado. Confere a caixa de entrada (e o spam).`,
+      { title: "E-mail enviado" }
+    );
+  } catch (err) {
+    await alertDialog("Não foi possível enviar o e-mail agora. Confere se digitou certo e tenta de novo.");
+  }
 });
 
 function mensagemDeErro(code) {

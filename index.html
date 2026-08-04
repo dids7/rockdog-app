@@ -48,6 +48,7 @@
       <button type="submit" class="btn-primary" id="login-btn">Entrar</button>
       <p class="login-error" id="login-error"></p>
     </form>
+    <button type="button" class="link-esqueci-senha" id="btn-esqueci-senha">Esqueci minha senha</button>
   </div>
 </div>
 
@@ -448,24 +449,6 @@
       </form>
     </div>
   </div>
-  <!-- Janela genérica de confirmação/entrada/aviso, substitui confirm()/prompt()/alert() do navegador -->
-  <div id="dialog-overlay" class="modal-overlay">
-    <div class="modal-card dialog-card">
-      <h3 id="dialog-title" class="dialog-title"></h3>
-      <p id="dialog-message" class="dialog-message"></p>
-      <div id="dialog-input-wrap" class="field" hidden>
-        <div class="stepper" id="dialog-stepper">
-          <button type="button" class="stepper-btn" id="dialog-decrement">−</button>
-          <input type="text" inputmode="decimal" id="dialog-input" class="stepper-input" />
-          <button type="button" class="stepper-btn" id="dialog-increment">+</button>
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button type="button" class="btn-ghost" id="dialog-cancel">Cancelar</button>
-        <button type="button" class="btn-primary btn-compact" id="dialog-confirm">Confirmar</button>
-      </div>
-    </div>
-  </div>
   <!-- Modal de cadastro/edição de item do cardápio -->
   <div id="modal-item-cardapio" class="modal-overlay">
     <div class="modal-card modal-card-wide">
@@ -607,6 +590,26 @@
           <button type="submit" class="btn-primary btn-compact">Salvar</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Janela genérica de confirmação/entrada/aviso, substitui confirm()/prompt()/alert() do navegador.
+     Fica FORA do app-shell de propósito, pra funcionar mesmo antes do login (ex: esqueci minha senha). -->
+<div id="dialog-overlay" class="modal-overlay">
+  <div class="modal-card dialog-card">
+    <h3 id="dialog-title" class="dialog-title"></h3>
+    <p id="dialog-message" class="dialog-message"></p>
+    <div id="dialog-input-wrap" class="field" hidden>
+      <div class="stepper" id="dialog-stepper">
+        <button type="button" class="stepper-btn" id="dialog-decrement">−</button>
+        <input type="text" inputmode="decimal" id="dialog-input" class="stepper-input" />
+        <button type="button" class="stepper-btn" id="dialog-increment">+</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" id="dialog-cancel">Cancelar</button>
+      <button type="button" class="btn-primary btn-compact" id="dialog-confirm">Confirmar</button>
     </div>
   </div>
 </div>

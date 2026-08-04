@@ -159,6 +159,22 @@ input[type="date"] {
   min-height: 16px;
 }
 
+.link-esqueci-senha {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  background: none;
+  border: none;
+  color: var(--gray);
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: center;
+}
+.link-esqueci-senha:hover {
+  color: var(--yellow);
+}
+
 /* ==========================================================================
    App shell (after login)
    ========================================================================== */
@@ -1246,4 +1262,8 @@ textarea:focus { border-color: var(--yellow); }
 }
 .stepper-input {
   -moz-appearance: textfield;
+}
+
+.stepper--plain .stepper-btn {
+  display: none;
 }
